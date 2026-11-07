@@ -361,53 +361,49 @@ function registrarHSP() {
 }
 
 // PASO 2.3: Generar opciones de arreglo serie/paralelo, con verificación de MPPT
-function autoCalcularPaso2_3() {
+// Se ejecuta solo con el botón "Registrar datos del panel y MPPT", no con cada cambio de campo,
+// para poder corregir varios campos con calma antes de recalcular.
+function calcularPaso2_3() {
+    limpiarResultado('resultado-2-3');
+    document.getElementById('selector-opciones').style.display = 'none';
+
+    if (!estado.P_arreglo) {
+        mostrarError('Primero registra las Horas Solar Pico y el PR en el Paso 2.1.', null, false);
+        return;
+    }
+
     const P_panel_input = document.getElementById('P_panel').value;
     const V_nominal_input = document.getElementById('V_nominal').value;
 
-    // Evitar recrear las tarjetas al perder foco si los valores no cambiaron.
-    // La recreación podía consumir el primer clic de selección del arreglo.
-    if (Number(P_panel_input) === estado.P_panel &&
-        Number(V_nominal_input) === estado.V_nominal &&
-        estado.opciones_arreglo.length &&
-        estado.N_paneles_total === Math.ceil(estado.P_arreglo / estado.P_panel)) return;
-
-    // Si falta alguno de los inputs base, limpiar resultado
-    if (!P_panel_input || !V_nominal_input || !estado.P_arreglo) {
-        limpiarResultado('resultado-2-3');
-        document.getElementById('selector-opciones').style.display = 'none';
+    const P_panel = validarNumero(P_panel_input, 'Potencia nominal del panel', 'P_panel');
+    if (!P_panel) return;
+    if (!V_nominal_input) {
+        mostrarError('Selecciona el voltaje nominal del panel.', 'V_nominal');
         return;
     }
-
-    const P_panel = validarNumero(P_panel_input, 'Potencia nominal del panel', 'P_panel');
     const V_nominal = parseFloat(V_nominal_input);
-    if (!P_panel) return;
 
     // Datos para la verificación del MPPT
-    const Voc_input = document.getElementById('Voc_panel') ? document.getElementById('Voc_panel').value : '';
-    const Isc_input = document.getElementById('Isc_panel') ? document.getElementById('Isc_panel').value : '';
-    const beta_input = document.getElementById('beta_Voc') ? document.getElementById('beta_Voc').value : '';
-    const Tmin_input = document.getElementById('T_min_diseno') ? document.getElementById('T_min_diseno').value : '';
-    const Vmax_input = document.getElementById('Vmax_mppt') ? document.getElementById('Vmax_mppt').value : '';
-    const Imax_input = document.getElementById('Imax_mppt') ? document.getElementById('Imax_mppt').value : '';
-    const Pmax_input = document.getElementById('Pmax_mppt') ? document.getElementById('Pmax_mppt').value : '';
-
-    if (!Voc_input || !Isc_input || beta_input === '' || Tmin_input === '' || !Vmax_input || !Imax_input || !Pmax_input) {
-        limpiarResultado('resultado-2-3');
-        document.getElementById('selector-opciones').style.display = 'none';
-        mostrarError('Completa los datos del panel (Voc, Isc, β_Voc, temperatura mínima) y del MPPT (Vmax, Imax, Pmax) para generar las opciones de arreglo.', null, false);
-        return;
-    }
-
-    const Voc_panel = validarNumero(Voc_input, 'Tensión de circuito abierto (Voc)', 'Voc_panel');
-    const Isc_panel = validarNumero(Isc_input, 'Corriente de cortocircuito (Isc)', 'Isc_panel');
-    const beta_Voc = Number(beta_input);
-    const T_min_diseno = Number(Tmin_input);
-    const Vmax_mppt = validarNumero(Vmax_input, 'Tensión máxima del MPPT', 'Vmax_mppt');
-    const Imax_mppt = validarNumero(Imax_input, 'Corriente máxima del MPPT', 'Imax_mppt');
-    const Pmax_mppt = validarNumero(Pmax_input, 'Potencia máxima del MPPT', 'Pmax_mppt');
+    const Voc_panel = validarNumero(document.getElementById('Voc_panel').value, 'Tensión de circuito abierto (Voc)', 'Voc_panel');
+    const Isc_panel = validarNumero(document.getElementById('Isc_panel').value, 'Corriente de cortocircuito (Isc)', 'Isc_panel');
+    const beta_input = document.getElementById('beta_Voc').value;
+    const Tmin_input = document.getElementById('T_min_diseno').value;
+    const Vmax_mppt = validarNumero(document.getElementById('Vmax_mppt').value, 'Tensión máxima del MPPT', 'Vmax_mppt');
+    const Imax_mppt = validarNumero(document.getElementById('Imax_mppt').value, 'Corriente máxima del MPPT', 'Imax_mppt');
+    const Pmax_mppt = validarNumero(document.getElementById('Pmax_mppt').value, 'Potencia máxima del MPPT', 'Pmax_mppt');
 
     if (!Voc_panel || !Isc_panel || !Vmax_mppt || !Imax_mppt || !Pmax_mppt) return;
+
+    if (beta_input === '') {
+        mostrarError('Completa el coeficiente de temperatura (β_Voc).', 'beta_Voc');
+        return;
+    }
+    if (Tmin_input === '') {
+        mostrarError('Completa la temperatura mínima de diseño.', 'T_min_diseno');
+        return;
+    }
+    const beta_Voc = Number(beta_input);
+    const T_min_diseno = Number(Tmin_input);
     if (!Number.isFinite(beta_Voc) || !Number.isFinite(T_min_diseno)) {
         mostrarError('Verifica el coeficiente de temperatura (β_Voc) y la temperatura mínima de diseño.', 'beta_Voc');
         return;
