@@ -6,8 +6,8 @@ const UMBRAL_110V_W = 1600;      // ~16 A a 110 V: por encima, el equipo de carg
 // ===== ESTADO =====
 function crearEstado() {
     return {
-        nivel: null, alimentacion: null, tension_nivel: null, mppt: null, tipo_equipo: null,
         P_dispositivo: null, t_respaldo: null, E_sesion: null, num_dispositivos: null, E_auto: null,
+        tension_nivel: null,
         DoD: null, eta_inversor: null, V_sistema: null,
         C_banco: null, V_banco: null, I_max_banco: null, masa_banco: null,
         E_bat: null, C_total: null, I_DC: null,
@@ -137,6 +137,7 @@ function aplicarConfiguracion() {
     const previa = tension.value;
     tension.innerHTML = opciones.map(([val, txt]) => `<option value="${val}">${txt}</option>`).join('');
     tension.value = opciones.some(([val]) => val === previa) ? previa : opciones[0][0];
+    estado.tension_nivel = Number(tension.value);
 
     // Bloques según configuración
     mostrarBloque('.solo-nivel-2', esNivel2);
@@ -244,7 +245,7 @@ function calcularPaso1_4() {
         return;
     }
 
-    // E_bat = P × t × N ÷ (DoD × η), con P × t × N = E_auto
+    // E_bat = E_auto ÷ (DoD × η)
     const E_bat = estado.E_auto / (DoD * eta);
     const C_total = E_bat / Vsis;
 
@@ -266,7 +267,7 @@ function calcularPaso1_4() {
         masa_bateria_total: masa_total
     });
 
-    const etiqueta = document.getElementById('nivel').value === '1'
+    const etiqueta = v('nivel') === '1'
         ? 'Energía diaria a recargar (solo lectura)'
         : 'Energía de batería requerida';
 
@@ -431,7 +432,7 @@ function calcularPaso2_3() {
 
     // Verificaciones de aprovechamiento
     let verificacion = '';
-    if (document.getElementById('nivel').value === '1') {
+    if (v('nivel') === '1') {
         const t_recarga = estado.E_bat / (N_paneles * P_panel * PR_REFERENCIA);
         const ok = t_recarga <= estado.HSP;
         verificacion = `
@@ -444,7 +445,7 @@ function calcularPaso2_3() {
         const ok = fraccion >= objetivo;
         verificacion = `
             <p>Aprovechamiento solar alcanzado = <span class="valor">${(fraccion * 100).toFixed(0)} %</span> (objetivo: ${(objetivo * 100).toFixed(0)} %)</p>
-            <p style="font-weight:600; color:${ok ? '#155724' : '#721c24'};">${ok ? '✓ El arreglo cumple el objetivo.' : `✗ Faltan paneles para alcanzar el objetivo.`}</p>
+            <p style="font-weight:600; color:${ok ? '#155724' : '#721c24'};">${ok ? '✓ El arreglo cumple el objetivo.' : '✗ Faltan paneles para alcanzar el objetivo.'}</p>
         `;
     }
 
@@ -539,10 +540,9 @@ function calcularPaso3() {
     const cumple_bateria = I_disp >= estado.I_DC;
 
     const cumple_todo = cumple_potencia && cumple_bateria;
-    const tipo = v('tipo_equipo');
     const trifasica = v('nivel') === '2' && v('alimentacion') === 'trifasica';
     const descripcionEquipo = trifasica
-        ? (tipo === 'nativo' ? 'Trifásico nativo (1 equipo)' : `${N} monofásicos en paralelo`)
+        ? (v('tipo_equipo') === 'nativo' ? 'Trifásico nativo (1 equipo)' : `${N} monofásicos en paralelo`)
         : 'Monofásico';
 
     const aviso110 = estado.tension_nivel === 110 && P_total > UMBRAL_110V_W
