@@ -109,6 +109,59 @@
                 <button class="btn-calcular" onclick="calcularPaso1_3()">Calcular energía requerida y recomendar batería</button>
                 <div id="resultado-1-3" class="resultado"></div>
             </div>
+            
+            <!-- Paso 1.4 -->
+            <div class="paso">
+            <h3>Paso 1.4 — Capacidad real y selección de banco comercial</h3>
+            <p class="subtitulo-paso">Corrige la energía teórica con DoD, eficiencia del inversor y autonomía, y dimensiona el número de bancos.</p>
+
+            <label for="DoD">Profundidad de descarga, DoD (fracción 0–1)</label>
+            <p class="ayuda-campo">Porcentaje de la batería que se puede usar sin dañarla. Ejemplo: 0.5 para 50 %.</p>
+            <input type="number" id="DoD" placeholder="Ej: 0.5" min="0" max="1" step="any" required aria-describedby="error-DoD">
+            <p id="error-DoD" class="error-campo" aria-live="polite" hidden></p>
+
+            <label for="eta_inversor">Eficiencia del inversor (fracción 0–1)</label>
+            <p class="ayuda-campo">Tómala de la ficha del inversor. Ejemplo: 0.9 para 90 %.</p>
+            <input type="number" id="eta_inversor" placeholder="Ej: 0.9" min="0" max="1" step="any" required aria-describedby="error-eta_inversor">
+            <p id="error-eta_inversor" class="error-campo" aria-live="polite" hidden></p>
+
+            <label for="dias_autonomia">Días de autonomía</label>
+            <p class="ayuda-campo">Cuántos días sin sol debe cubrir la batería. Mínimo 1.</p>
+            <input type="number" id="dias_autonomia" placeholder="Ej: 1" min="1" step="any" required aria-describedby="error-dias_autonomia">
+            <p id="error-dias_autonomia" class="error-campo" aria-live="polite" hidden></p>
+
+            <label for="V_sistema">Tensión del sistema DC (V)</label>
+            <p class="ayuda-campo">Tensión del bus de batería e inversor. Selecciona 12, 24 o 48 V.</p>
+            <select id="V_sistema" required>
+            <option value="">-- Selecciona --</option>
+            <option value="12">12 V</option>
+            <option value="24">24 V</option>
+            <option value="48">48 V</option>
+        </select>
+
+            <label for="C_banco">Capacidad del banco comercial (Ah)</label>
+            <p class="ayuda-campo">Capacidad nominal de la ficha, normalmente a C20.</p>
+            <input type="number" id="C_banco" placeholder="Ej: 100" min="0" step="any" required aria-describedby="error-C_banco">
+            <p id="error-C_banco" class="error-campo" aria-live="polite" hidden></p>
+
+            <label for="V_banco">Tensión nominal del banco (V)</label>
+            <p class="ayuda-campo">Tensión de una sola batería comercial, por ejemplo 12 V.</p>
+            <input type="number" id="V_banco" placeholder="Ej: 12" min="0" step="any" required aria-describedby="error-V_banco">
+            <p id="error-V_banco" class="error-campo" aria-live="polite" hidden></p>
+
+            <label for="I_max_banco">Corriente máxima de descarga del banco (A)</label>
+            <p class="ayuda-campo">Corriente continua máxima de la ficha, no la de pico.</p>
+            <input type="number" id="I_max_banco" placeholder="Ej: 20" min="0" step="any" required aria-describedby="error-I_max_banco">
+            <p id="error-I_max_banco" class="error-campo" aria-live="polite" hidden></p>
+
+            <label for="masa_banco">Masa del banco (kg)</label>
+            <input type="number" id="masa_banco" placeholder="Ej: 30" min="0" step="any" required aria-describedby="error-masa_banco">
+            <p id="error-masa_banco" class="error-campo" aria-live="polite" hidden></p>
+
+            <button class="btn-calcular" onclick="calcularPaso1_4()">Calcular capacidad real y bancos</button>
+            <div id="resultado-1-4" class="resultado"></div>
+            </div>
+            
         </section>
 
         <!-- SECCIÓN 2: DIMENSIONAMIENTO DE PANELES -->
