@@ -433,4 +433,5 @@ body.sizing-page{overflow:auto;padding:0;margin:0}.solar-sizing{padding:32px 16p
  .solar-sizing .datos-previos { grid-template-columns:1fr; }
  .solar-sizing .guia-recorrido { grid-template-columns:repeat(2,minmax(0,1fr)); }
  .solar-sizing .error-general { margin:16px; }
+ .solar-sizing .opcion-arreglo.rechazada { opacity: 0.65; }
 }
