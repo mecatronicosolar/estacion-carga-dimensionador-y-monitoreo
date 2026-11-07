@@ -236,12 +236,12 @@
                 <p class="subtitulo-paso">Completa la sección 1, registra las HSP y el PR, y luego indica los datos del panel y del MPPT. Las opciones aparecen automáticamente.</p>
                 <label for="P_panel">Potencia nominal del panel (W)</label>
                 <p id="ayuda-P_panel" class="ayuda-campo">Potencia de un solo panel, tomada de su ficha o etiqueta. Número mayor que 0; admite decimales. Por ejemplo: para un panel de 400 Wp, escribe 400.</p>
-                <input type="number" id="P_panel" placeholder="Ej: 400"  min="0" step="any" required aria-describedby="ayuda-P_panel error-P_panel">
+                <input type="number" id="P_panel" placeholder="Ej: 400" min="0" step="any" required aria-describedby="ayuda-P_panel error-P_panel">
                 <p id="error-P_panel" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="V_nominal">Voltaje nominal del panel (V)</label>
                 <p id="ayuda-V_nominal" class="ayuda-campo">Selecciona 12, 24 o 48 V según la categoría nominal del panel. Las tensiones y corrientes del arreglo que se muestran abajo son aproximaciones con esta categoría; la verificación real con el MPPT usa Voc e Isc, que se piden a continuación.</p>
-                <select id="V_nominal"  aria-describedby="ayuda-V_nominal" required>
+                <select id="V_nominal" aria-describedby="ayuda-V_nominal" required>
                     <option value="">-- Selecciona un voltaje --</option>
                     <option value="12">12 V</option>
                     <option value="24">24 V</option>
@@ -250,41 +250,41 @@
 
                 <label for="Voc_panel">Tensión de circuito abierto, Voc (V)</label>
                 <p id="ayuda-Voc_panel" class="ayuda-campo">Valor de la ficha del panel, a condiciones estándar (STC, 25 °C).</p>
-                <input type="number" id="Voc_panel" placeholder="Ej: 49.2"  min="0" step="any" required aria-describedby="ayuda-Voc_panel error-Voc_panel">
+                <input type="number" id="Voc_panel" placeholder="Ej: 49.2" min="0" step="any" required aria-describedby="ayuda-Voc_panel error-Voc_panel">
                 <p id="error-Voc_panel" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Isc_panel">Corriente de cortocircuito, Isc (A)</label>
                 <p id="ayuda-Isc_panel" class="ayuda-campo">Valor de la ficha del panel, a condiciones estándar (STC).</p>
-                <input type="number" id="Isc_panel" placeholder="Ej: 13.5"  min="0" step="any" required aria-describedby="ayuda-Isc_panel error-Isc_panel">
+                <input type="number" id="Isc_panel" placeholder="Ej: 13.5" min="0" step="any" required aria-describedby="ayuda-Isc_panel error-Isc_panel">
                 <p id="error-Isc_panel" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="beta_Voc">Coeficiente de temperatura de Voc, β_Voc (%/°C)</label>
                 <p id="ayuda-beta_Voc" class="ayuda-campo">Valor de la ficha del panel. Normalmente es negativo. Ejemplo: -0.27.</p>
-                <input type="number" id="beta_Voc" placeholder="Ej: -0.27"  step="any" required aria-describedby="ayuda-beta_Voc error-beta_Voc">
+                <input type="number" id="beta_Voc" placeholder="Ej: -0.27" step="any" required aria-describedby="ayuda-beta_Voc error-beta_Voc">
                 <p id="error-beta_Voc" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="T_min_diseno">Temperatura mínima de diseño (°C)</label>
                 <p id="ayuda-T_min_diseno" class="ayuda-campo">Temperatura mínima esperada en el sitio de instalación. Un valor más bajo exige mayor margen en el MPPT, porque Voc aumenta al bajar la temperatura.</p>
-                <input type="number" id="T_min_diseno" placeholder="Ej: 5"  step="any" required aria-describedby="ayuda-T_min_diseno error-T_min_diseno">
+                <input type="number" id="T_min_diseno" placeholder="Ej: 5" step="any" required aria-describedby="ayuda-T_min_diseno error-T_min_diseno">
                 <p id="error-T_min_diseno" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Vmax_mppt">Tensión máxima de entrada del MPPT (V)</label>
                 <p id="ayuda-Vmax_mppt" class="ayuda-campo">De la ficha del controlador de carga.</p>
-                <input type="number" id="Vmax_mppt" placeholder="Ej: 75"  min="0" step="any" required aria-describedby="ayuda-Vmax_mppt error-Vmax_mppt">
+                <input type="number" id="Vmax_mppt" placeholder="Ej: 75" min="0" step="any" required aria-describedby="ayuda-Vmax_mppt error-Vmax_mppt">
                 <p id="error-Vmax_mppt" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Imax_mppt">Corriente máxima de entrada del MPPT (A)</label>
                 <p id="ayuda-Imax_mppt" class="ayuda-campo">De la ficha del controlador de carga.</p>
-                <input type="number" id="Imax_mppt" placeholder="Ej: 40"  min="0" step="any" required aria-describedby="ayuda-Imax_mppt error-Imax_mppt">
+                <input type="number" id="Imax_mppt" placeholder="Ej: 40" min="0" step="any" required aria-describedby="ayuda-Imax_mppt error-Imax_mppt">
                 <p id="error-Imax_mppt" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Pmax_mppt">Potencia máxima de entrada del MPPT (W)</label>
                 <p id="ayuda-Pmax_mppt" class="ayuda-campo">De la ficha del controlador de carga.</p>
-                <input type="number" id="Pmax_mppt" placeholder="Ej: 1100"  min="0" step="any" required aria-describedby="ayuda-Pmax_mppt error-Pmax_mppt">
+                <input type="number" id="Pmax_mppt" placeholder="Ej: 1100" min="0" step="any" required aria-describedby="ayuda-Pmax_mppt error-Pmax_mppt">
                 <p id="error-Pmax_mppt" class="error-campo" aria-live="polite" hidden></p>
+
                 <button class="btn-calcular" onclick="calcularPaso2_3()">Registrar datos del panel y MPPT</button>
                 <div id="resultado-2-3" class="resultado"></div>
-
             </div>
 
             <!-- Selección de opciones -->
