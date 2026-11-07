@@ -188,7 +188,7 @@
             <h3>Paso 2.3 — Panel y MPPT</h3>
 
             <label for="P_panel">Potencia nominal del panel (W)</label>
-            <input type="number" id="P_panel" placeholder="Ej: 630" min="0" step="any" required aria-describedby="error-P_panel">
+            <input type="number" id="P_panel" placeholder="Ej: 625" min="0" step="any" required aria-describedby="error-P_panel">
             <p id="error-P_panel" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="V_nominal">Voltaje nominal del panel (V)</label>
@@ -201,16 +201,16 @@
             </select>
 
             <label for="Voc_panel">Tensión de circuito abierto, Voc (V)</label>
-            <input type="number" id="Voc_panel" placeholder="Ej: 49.2" min="0" step="any" required aria-describedby="error-Voc_panel">
+            <input type="number" id="Voc_panel" placeholder="Ej: 48.7" min="0" step="any" required aria-describedby="error-Voc_panel">
             <p id="error-Voc_panel" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="Isc_panel">Corriente de cortocircuito, Isc (A)</label>
-            <input type="number" id="Isc_panel" placeholder="Ej: 13.5" min="0" step="any" required aria-describedby="error-Isc_panel">
+            <input type="number" id="Isc_panel" placeholder="Ej: 16.15" min="0" step="any" required aria-describedby="error-Isc_panel">
             <p id="error-Isc_panel" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="beta_Voc">Coeficiente de temperatura de Voc, β_Voc (%/°C)</label>
-            <p class="ayuda-campo">Normalmente negativo. Ejemplo: -0.27.</p>
-            <input type="number" id="beta_Voc" placeholder="Ej: -0.27" step="any" required aria-describedby="error-beta_Voc">
+            <p class="ayuda-campo">Normalmente negativo. Ejemplo: -0.25.</p>
+            <input type="number" id="beta_Voc" placeholder="Ej: -0.25" step="any" required aria-describedby="error-beta_Voc">
             <p id="error-beta_Voc" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="T_min_diseno">Temperatura mínima de diseño (°C)</label>
@@ -219,36 +219,38 @@
 
             <div class="bloque solo-mppt-integrado" hidden>
                 <label for="Vmp_panel">Tensión en punto de máxima potencia, Vmp (V)</label>
-                <input type="number" id="Vmp_panel" placeholder="Ej: 41" min="0" step="any" aria-describedby="error-Vmp_panel">
+                <p class="ayuda-campo">De la ficha del panel.</p>
+                <input type="number" id="Vmp_panel" placeholder="Ej: 40.45" min="0" step="any" aria-describedby="error-Vmp_panel">
                 <p id="error-Vmp_panel" class="error-campo" aria-live="polite" hidden></p>
+
+                <label for="Voc_max_inversor">Tensión máxima de entrada del inversor (V)</label>
+                <p class="ayuda-campo">De la ficha del inversor (Voc máximo del arreglo).</p>
+                <input type="number" id="Voc_max_inversor" placeholder="Ej: 145" min="0" step="any" aria-describedby="error-Voc_max_inversor">
+                <p id="error-Voc_max_inversor" class="error-campo" aria-live="polite" hidden></p>
+
+                <label for="Vmppt_min">Mínimo del rango MPPT del inversor (V)</label>
+                <p class="ayuda-campo">A la tensión de batería del sistema (ej. 48 V).</p>
+                <input type="number" id="Vmppt_min" placeholder="Ej: 60" min="0" step="any" aria-describedby="error-Vmppt_min">
+                <p id="error-Vmppt_min" class="error-campo" aria-live="polite" hidden></p>
+
+                <label for="Vmppt_max">Máximo del rango MPPT del inversor (V)</label>
+                <input type="number" id="Vmppt_max" placeholder="Ej: 130" min="0" step="any" aria-describedby="error-Vmppt_max">
+                <p id="error-Vmppt_max" class="error-campo" aria-live="polite" hidden></p>
             </div>
 
             <div class="bloque solo-mppt-externo">
                 <label for="Vmax_mppt">Tensión máxima de entrada del MPPT (V)</label>
-                <input type="number" id="Vmax_mppt" placeholder="Ej: 75" min="0" step="any" aria-describedby="error-Vmax_mppt">
+                <input type="number" id="Vmax_mppt" placeholder="Ej: 145" min="0" step="any" aria-describedby="error-Vmax_mppt">
                 <p id="error-Vmax_mppt" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Imax_mppt">Corriente máxima de entrada del MPPT (A)</label>
-                <input type="number" id="Imax_mppt" placeholder="Ej: 40" min="0" step="any" aria-describedby="error-Imax_mppt">
+                <p class="ayuda-campo">Corriente FV del controlador, no la de carga desde red.</p>
+                <input type="number" id="Imax_mppt" placeholder="Ej: 80" min="0" step="any" aria-describedby="error-Imax_mppt">
                 <p id="error-Imax_mppt" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Pmax_mppt">Potencia máxima de entrada del MPPT (W)</label>
-                <input type="number" id="Pmax_mppt" placeholder="Ej: 1040" min="0" step="any" aria-describedby="error-Pmax_mppt">
+                <input type="number" id="Pmax_mppt" placeholder="Ej: 5000" min="0" step="any" aria-describedby="error-Pmax_mppt">
                 <p id="error-Pmax_mppt" class="error-campo" aria-live="polite" hidden></p>
-            </div>
-
-            <div class="bloque solo-mppt-integrado" hidden>
-                <label for="Voc_max_inversor">Tensión máxima de entrada del inversor (V)</label>
-                <input type="number" id="Voc_max_inversor" placeholder="Ej: 500" min="0" step="any" aria-describedby="error-Voc_max_inversor">
-                <p id="error-Voc_max_inversor" class="error-campo" aria-live="polite" hidden></p>
-
-                <label for="Vmppt_min">Mínimo del rango MPPT del inversor (V)</label>
-                <input type="number" id="Vmppt_min" placeholder="Ej: 120" min="0" step="any" aria-describedby="error-Vmppt_min">
-                <p id="error-Vmppt_min" class="error-campo" aria-live="polite" hidden></p>
-
-                <label for="Vmppt_max">Máximo del rango MPPT del inversor (V)</label>
-                <input type="number" id="Vmppt_max" placeholder="Ej: 425" min="0" step="any" aria-describedby="error-Vmppt_max">
-                <p id="error-Vmppt_max" class="error-campo" aria-live="polite" hidden></p>
             </div>
 
             <button class="btn-calcular" onclick="calcularPaso2_3()">Registrar datos del panel y MPPT</button>
@@ -285,7 +287,7 @@
         </div>
     </section>
 
-    <!-- SECCIÓN 4: sin cambios por ahora (cálculo monofásico en cables_ac.js) -->
+    <!-- SECCIÓN 4: cálculo monofásico en cables_ac.js -->
     <section class="seccion" id="seccion-conductores">
         <h2>4. Dimensionamiento de conductores eléctricos AC</h2>
         <div class="descripcion-seccion"><p>Usa la potencia del paso 1.1 para estimar los conductores de un punto de carga. Completa la tensión, la distancia de ida y el entorno antes de calcular.</p></div>
