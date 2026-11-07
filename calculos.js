@@ -5,13 +5,40 @@ let estado = {
     num_dispositivos: null,
     E_autosuficiencia: null,
     HSP: null,
+    PR: null,
     P_arreglo: null,
     P_panel: null,
     V_nominal: null,
     N_paneles_total: null,
     opciones_arreglo: [],
     arreglo_seleccionado: null,
-    paneles_confirmados: false
+    paneles_confirmados: false,
+    // --- NUEVO: Sección 1, batería ---
+    DoD: null,
+    eta_inversor: null,
+    dias_autonomia: null,
+    E_bat_requerida: null,     // Wh, ya corregida por DoD, eta y autonomía
+    V_sistema: null,           // 12, 24 o 48 V del sistema (no del panel)
+    C_banco: null,             // Ah de un banco comercial
+    V_banco: null,             // V nominal de un banco comercial
+    I_max_banco: null,         // A, corriente máxima de descarga de un banco
+    masa_banco: null,          // kg
+    N_paralelo_bancos: null,
+    N_serie_bancos: null,
+    N_bancos_total: null,
+    masa_bateria_total: null,
+    // --- NUEVO: Sección 2, verificación MPPT ---
+    Voc_panel: null,
+    beta_Voc: null,            // %/°C, típicamente negativo
+    T_min_diseno: null,        // °C
+    Vmax_mppt: null,
+    Imax_mppt: null,
+    Pmax_mppt: null,
+    Isc_panel: null,
+    // --- NUEVO: Sección 3, inversor ---
+    Vmax_inversor: null,
+    Imax_inversor: null,
+    Pmax_inversor: null
 };
 
 // ===== FUNCIONES DE VALIDACIÓN =====
@@ -196,6 +223,85 @@ function calcularPaso1_3() {
         </div>
     `;
     mostrarResultado('resultado-1-3', contenido);
+}
+
+// PASO 1.4: Corregir energía por DoD/eficiencia/autonomía y dimensionar bancos comerciales
+function calcularPaso1_4() {
+    limpiarResultado('resultado-1-4');
+
+    if (!estado.E_autosuficiencia) {
+        mostrarError('Primero debes calcular la energía requerida (Paso 1.3)');
+        return;
+    }
+
+    const DoD = validarNumero(document.getElementById('DoD').value, 'Profundidad de descarga (DoD)', 'DoD');
+    const eta_inversor = validarNumero(document.getElementById('eta_inversor').value, 'Eficiencia del inversor', 'eta_inversor');
+    const dias_autonomia = validarNumero(document.getElementById('dias_autonomia').value, 'Días de autonomía', 'dias_autonomia');
+    const V_sistema = parseFloat(document.getElementById('V_sistema').value);
+    const C_banco = validarNumero(document.getElementById('C_banco').value, 'Capacidad del banco', 'C_banco');
+    const V_banco = validarNumero(document.getElementById('V_banco').value, 'Tensión nominal del banco', 'V_banco');
+    const I_max_banco = validarNumero(document.getElementById('I_max_banco').value, 'Corriente máxima de descarga del banco', 'I_max_banco');
+    const masa_banco = validarNumero(document.getElementById('masa_banco').value, 'Masa del banco', 'masa_banco');
+
+    if (!DoD || !eta_inversor || !dias_autonomia || !V_sistema || !C_banco || !V_banco || !I_max_banco || !masa_banco) return;
+
+    if (DoD > 1) {
+        mostrarError('La profundidad de descarga (DoD) se expresa como fracción entre 0 y 1, por ejemplo 0.5.', 'DoD');
+        return;
+    }
+    if (eta_inversor > 1) {
+        mostrarError('La eficiencia del inversor se expresa como fracción entre 0 y 1, por ejemplo 0.9.', 'eta_inversor');
+        return;
+    }
+
+    estado.DoD = DoD;
+    estado.eta_inversor = eta_inversor;
+    estado.dias_autonomia = dias_autonomia;
+    estado.V_sistema = V_sistema;
+    estado.C_banco = C_banco;
+    estado.V_banco = V_banco;
+    estado.I_max_banco = I_max_banco;
+    estado.masa_banco = masa_banco;
+
+    // ECUACIÓN: energía real de batería, corregida
+    // E_bat = E_autosuficiencia × días_autonomía ÷ (DoD × η_inversor)
+    const E_bat_requerida = estado.E_autosuficiencia * dias_autonomia / (DoD * eta_inversor);
+    estado.E_bat_requerida = E_bat_requerida;
+
+    // Capacidad total del sistema en Ah
+    const C_total = E_bat_requerida / V_sistema;
+
+    // Número de bancos en paralelo (por capacidad) y en serie (por tensión)
+    const N_paralelo_bancos = redondearArriba(C_total / C_banco);
+    const N_serie_bancos = redondearArriba(V_sistema / V_banco);
+    const N_bancos_total = N_paralelo_bancos * N_serie_bancos;
+    estado.N_paralelo_bancos = N_paralelo_bancos;
+    estado.N_serie_bancos = N_serie_bancos;
+    estado.N_bancos_total = N_bancos_total;
+    estado.masa_bateria_total = N_bancos_total * masa_banco;
+
+    const contenido = `
+        <h4>Corrección de energía de batería</h4>
+        <p class="ecuacion">E_bat = E_autosuficiencia × días_autonomía ÷ (DoD × η_inversor)</p>
+        <p class="ecuacion">E_bat = ${estado.E_autosuficiencia.toFixed(2)} Wh × ${dias_autonomia} ÷ (${DoD} × ${eta_inversor})</p>
+        <p>E_bat (real) = <span class="valor">${E_bat_requerida.toFixed(2)}</span> <span class="unidad">Wh</span></p>
+        <hr style="margin: 12px 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);">
+        <p class="ecuacion">C_total = E_bat ÷ V_sistema</p>
+        <p>C_total = <span class="valor">${C_total.toFixed(2)}</span> <span class="unidad">Ah</span></p>
+        <hr style="margin: 12px 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);">
+        <p class="ecuacion">N_paralelo = redondeo_arriba(C_total ÷ C_banco)</p>
+        <p>N_paralelo = <span class="valor">${N_paralelo_bancos}</span></p>
+        <p class="ecuacion">N_serie = redondeo_arriba(V_sistema ÷ V_banco)</p>
+        <p>N_serie = <span class="valor">${N_serie_bancos}</span></p>
+        <hr style="margin: 12px 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);">
+        <div style="background: #e8f4f8; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8; margin-top: 15px;">
+            <h4 style="color: #0c5460; margin-bottom: 12px;">Resultado</h4>
+            <p style="margin: 6px 0;">Bancos totales necesarios: <strong>${N_bancos_total}</strong> (${N_serie_bancos} en serie × ${N_paralelo_bancos} en paralelo)</p>
+            <p style="margin: 6px 0;">Masa total estimada de baterías: <strong>${estado.masa_bateria_total.toFixed(1)} kg</strong></p>
+            <p style="margin: 10px 0; font-size: 0.9em;">Esta corrección usa DoD, eficiencia del inversor y días de autonomía. La verificación de corriente se completa en la Sección 3, cuando se conoce la potencia del inversor.</p>
+        </div>
+    `;
+    mostrarResultado('resultado-1-4', contenido);
 }
 
 // ===== SECCIÓN 2: DIMENSIONAMIENTO DE PANELES =====
