@@ -296,8 +296,13 @@
             <p id="estado-potencia-ac" class="texto-ayuda-ac" aria-live="polite"></p>
 
             <label for="tension_ac">Tensión de alimentación del punto de carga (V)</label>
-            <select id="tension_ac"><option value="110">110 V</option><option value="120">120 V</option><option value="220">220 V</option><option value="240">240 V</option></select>
-
+<select id="tension_ac">
+    <option value="110">110 V monofásica</option>
+    <option value="120">120 V monofásica</option>
+    <option value="220">220 V monofásica</option>
+    <option value="240">240 V monofásica</option>
+    <option value="380">380 V trifásica (3 fases)</option>
+</select>
             <label for="distancia_ac">Distancia de ida hasta el cargador (m)</label>
             <p class="ayuda-campo">Recorrido de ida; la herramienta incluye el retorno.</p>
             <input type="number" id="distancia_ac" placeholder="Ej: 20" min="0" max="10000" step="any" required aria-describedby="error-distancia_ac">
