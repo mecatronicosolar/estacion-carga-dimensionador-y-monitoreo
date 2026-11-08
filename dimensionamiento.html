@@ -4,30 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dimensionador Solar</title>
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="sizing-page">
-<header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">☀</span><span>Estación Solar</span></a><button class="menu-button" aria-expanded="false" aria-controls="main-nav">Menú</button><nav id="main-nav" class="nav"><a href="index.html">Inicio</a><a class="active" href="dimensionamiento.html">Dimensionamiento</a><a href="monitoreo.html">Monitoreo</a></nav></header>
+<header class="site-header"><a class="brand" href="index.html" aria-label="Estación Solar, inicio"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></span><span>Estación Solar<small>INGENIERÍA MECATRÓNICA</small></span></a><button class="menu-button" aria-expanded="false" aria-controls="main-nav">Menú <span aria-hidden="true">☰</span></button><nav id="main-nav" class="nav" aria-label="Navegación principal"><a  href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3Z"/><path d="M9 20v-7h6v7"/></svg><span>Inicio</span></a><a class=active href="dimensionamiento.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M8 6h8M8 11h2m4 0h2m-8 4h2m4 0h2m-8 4h2m4 0h2"/></svg><span>Dimensionamiento</span></a><a  href="monitoreo.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M6 15l4-5 4 3 6-8"/></svg><span>Monitoreo</span></a></nav><span class="header-tag">Proyecto de grado</span></header>
 <main class="solar-sizing">
 <div class="contenedor-principal">
 
     <header class="encabezado">
-        <h1>Dimensionador Solar</h1>
-        <p class="subtitulo">Metodología de dimensionamiento de una estación de carga solar</p>
+        <p class="eyebrow">ESTUDIO ENERGÉTICO · CÁLCULO PRELIMINAR</p><h1>Diseña tu escenario solar.</h1>
+        <p class="subtitulo">Define la carga, compara configuraciones y comprueba cada etapa del sistema.</p>
     </header>
 
     <section class="seccion introduccion">
-        <h2>¿De qué trata esta herramienta?</h2>
-        <p>Calcula la configuración de una <strong>estación de carga solar</strong> con respaldo de red. Ambos niveles tienen respaldo; la diferencia es la prioridad de la fuente y la tensión de alimentación.</p>
-        <ul>
-            <li><strong>Paso 0:</strong> nivel, alimentación, tensión y tipo de MPPT</li>
-            <li><strong>Sección 1:</strong> batería, con su capacidad, cadenas en serie y en paralelo</li>
-            <li><strong>Sección 2:</strong> paneles y verificación con el MPPT</li>
-            <li><strong>Sección 3:</strong> inversor, potencia y corriente de la batería</li>
-            <li><strong>Sección 4:</strong> conductores AC del punto de carga (monofásico y trifásico)</li>
-        </ul>
-        <p>Los valores de referencia y las limitaciones se documentan en el README del repositorio.</p>
+<div class="sizing-intro"><div><h2>De la demanda al sistema.</h2><p>Completa los parámetros de cada etapa. Los resultados se invalidan al editar datos de los que dependen.</p></div><span class="model-label">Modelo preliminar</span></div><nav class="guia-recorrido" aria-label="Etapas del dimensionador"><a href="#seccion-config"><span>00</span> Configuración</a><a href="#seccion-baterias"><span>01</span> Baterías</a><a href="#seccion-paneles"><span>02</span> FV y MPPT</a><a href="#seccion-inversor"><span>03</span> Inversor</a><a href="#seccion-conductores"><span>04</span> Conductores AC</a><a href="#seccion-dc"><span>05</span> Conductores DC</a></nav><details class="sizing-scope"><summary>Alcance y criterios de uso</summary><p>Estima una estación solar con almacenamiento y respaldo de red. El perfil de cálculo determina prioridades y opciones de alimentación; no clasifica el modo IEC. Los resultados son preliminares y requieren fichas comerciales y condiciones de instalación. No acreditan conformidad eléctrica ni validación física.</p></details>
     </section>
 
     <p id="error-dimensionador" class="error-general" role="alert" tabindex="-1" hidden></p>
@@ -38,40 +29,40 @@
         <div class="paso">
             <h3>Paso 0 — Nivel y configuración</h3>
 
-            <label for="nivel">Nivel de la estación</label>
+            <div class="form-field"><label for="nivel">Perfil de cálculo (no clasifica el modo IEC)</label>
             <p class="ayuda-campo">Nivel 1: prioriza la batería. Nivel 2: prioriza el sol y completa con red. Ambos tienen respaldo de red.</p>
             <select id="nivel" onchange="aplicarConfiguracion()" required>
-                <option value="1">Nivel 1 (hasta ~3,7 kW)</option>
-                <option value="2">Nivel 2 (7 kW o 11 kW)</option>
+                <option value="1">Perfil batería (referencia monofásica)</option>
+                <option value="2">Perfil solar (permite trifásica)</option>
             </select>
 
-            <label for="alimentacion">Alimentación de la red</label>
+            </div><div class="form-field"><label for="alimentacion">Alimentación de la red</label>
             <p class="ayuda-campo">Solo nivel 2 admite trifásica. El nivel 1 es siempre monofásico.</p>
             <select id="alimentacion" onchange="aplicarConfiguracion()" required>
                 <option value="monofasica">Monofásica</option>
                 <option value="trifasica">Trifásica</option>
             </select>
 
-            <label for="tension_nivel">Tensión de alimentación</label>
+            </div><div class="form-field"><label for="tension_nivel">Tensión de alimentación</label>
             <p class="ayuda-campo">Las opciones cambian según el nivel y la alimentación.</p>
             <select id="tension_nivel" required></select>
 
-            <div class="bloque solo-trifasica" hidden>
-                <label for="tipo_equipo">Tipo de equipo trifásico</label>
+            </div><div class="bloque solo-trifasica" hidden>
+                <div class="form-field"><label for="tipo_equipo">Tipo de equipo trifásico</label>
                 <p class="ayuda-campo">Nativo: un equipo trifásico. Paralelo: varios monofásicos formando la salida trifásica.</p>
                 <select id="tipo_equipo" onchange="aplicarConfiguracion()">
                     <option value="nativo">Trifásico nativo</option>
                     <option value="paralelo">Monofásicos en paralelo</option>
                 </select>
-            </div>
+            </div></div>
 
-            <label for="mppt">Controlador MPPT</label>
+            <div class="form-field"><label for="mppt">Controlador MPPT</label>
             <p class="ayuda-campo">Externo: un controlador aparte. Integrado: el MPPT está en el inversor.</p>
             <select id="mppt" onchange="aplicarConfiguracion()">
                 <option value="externo">Externo</option>
                 <option value="integrado">Integrado en el inversor</option>
             </select>
-        </div>
+        </div></div>
     </section>
 
     <!-- SECCIÓN 1 -->
@@ -80,30 +71,30 @@
 
         <div class="paso">
             <h3>Paso 1.1 — Potencia de carga</h3>
-            <label for="P_dispositivo">Potencia de carga por vehículo o equipo (W)</label>
+            <div class="form-field"><label for="P_dispositivo">Potencia de carga por vehículo o equipo (W)</label>
             <p class="ayuda-campo">Ejemplo: 0.8 kW = 800.</p>
             <input type="number" id="P_dispositivo" placeholder="Ej: 800" min="0" step="any" required aria-describedby="error-P_dispositivo">
-            <p id="error-P_dispositivo" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-P_dispositivo" class="error-campo" aria-live="polite" hidden></p></div>
             <button class="btn-calcular" onclick="calcularPaso1_1()">Registrar potencia</button>
             <div id="resultado-1-1" class="resultado"></div>
         </div>
 
         <div class="paso">
             <h3>Paso 1.2 — Tiempo de respaldo</h3>
-            <label for="t_respaldo">Tiempo de respaldo (h)</label>
-            <p class="ayuda-campo">Mínimo de diseño: 1 h. Por encima, el banco crece en proporción.</p>
+            <div class="form-field"><label for="t_respaldo">Tiempo de respaldo (h)</label>
+            <p class="ayuda-campo">Duración positiva editable; 1 h es el escenario de referencia.</p>
             <input type="number" id="t_respaldo" value="1" min="0" step="any" required aria-describedby="error-t_respaldo">
-            <p id="error-t_respaldo" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-t_respaldo" class="error-campo" aria-live="polite" hidden></p></div>
             <button class="btn-calcular" onclick="calcularPaso1_2()">Calcular energía por sesión</button>
             <div id="resultado-1-2" class="resultado"></div>
         </div>
 
         <div class="paso">
             <h3>Paso 1.3 — Vehículos simultáneos</h3>
-            <label for="num_dispositivos">Número de vehículos simultáneos</label>
+            <div class="form-field"><label for="num_dispositivos">Número de vehículos simultáneos</label>
             <p class="ayuda-campo">Entero, mayor o igual que 1.</p>
             <input type="number" id="num_dispositivos" placeholder="Ej: 1" min="1" step="1" required aria-describedby="error-num_dispositivos">
-            <p id="error-num_dispositivos" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-num_dispositivos" class="error-campo" aria-live="polite" hidden></p></div>
             <button class="btn-calcular" onclick="calcularPaso1_3()">Calcular energía requerida</button>
             <div id="resultado-1-3" class="resultado"></div>
         </div>
@@ -111,17 +102,17 @@
         <div class="paso">
             <h3>Paso 1.4 — Batería comercial</h3>
 
-            <label for="DoD">Profundidad de descarga, DoD (0–1)</label>
-            <p class="ayuda-campo">Por defecto 0,5 (AGM o gel). Ejemplo: 0.5 para 50 %.</p>
-            <input type="number" id="DoD" value="0.5" min="0" max="1" step="any" required aria-describedby="error-DoD">
-            <p id="error-DoD" class="error-campo" aria-live="polite" hidden></p>
+            <div class="form-field"><label for="DoD">Profundidad de descarga, DoD (0–1)</label>
+            <p class="ayuda-campo">Referencia del prototipo: 0,8. Confirmar con fabricante y tecnología; no presupone AGM/gel.</p>
+            <input type="number" id="DoD" value="0.8" min="0" max="1" step="any" required aria-describedby="error-DoD">
+            <p id="error-DoD" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="eta_inversor">Eficiencia del inversor, η (0–1)</label>
-            <p class="ayuda-campo">Por defecto 0,9. Tómala de la ficha del inversor.</p>
-            <input type="number" id="eta_inversor" value="0.9" min="0" max="1" step="any" required aria-describedby="error-eta_inversor">
-            <p id="error-eta_inversor" class="error-campo" aria-live="polite" hidden></p>
+            <div class="form-field"><label for="eta_inversor">Eficiencia del inversor, η (0–1)</label>
+            <p class="ayuda-campo">Supuesto editable 0,85. Sustituir por ficha/curva de eficiencia.</p>
+            <input type="number" id="eta_inversor" value="0.85" min="0" max="1" step="any" required aria-describedby="error-eta_inversor">
+            <p id="error-eta_inversor" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="V_sistema">Tensión del sistema DC (V)</label>
+            <div class="form-field"><label for="V_sistema">Tensión del sistema DC (V)</label>
             <p class="ayuda-campo">Debe ser múltiplo de la tensión del banco.</p>
             <select id="V_sistema" required>
                 <option value="">-- Selecciona --</option>
@@ -131,23 +122,23 @@
                 <option value="96">96 V</option>
             </select>
 
-            <label for="C_banco">Capacidad del banco comercial (Ah)</label>
+            </div><div class="form-field"><label for="C_banco">Capacidad del banco comercial (Ah)</label>
             <p class="ayuda-campo">Capacidad nominal de la ficha, normalmente C20. Si la ficha solo publica otra tasa de descarga, usa la del tiempo de respaldo (por ejemplo, 1 h).</p>
             <input type="number" id="C_banco" placeholder="Ej: 162" min="0" step="any" required aria-describedby="error-C_banco">
-            <p id="error-C_banco" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-C_banco" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="V_banco">Tensión nominal del banco (V)</label>
+            <div class="form-field"><label for="V_banco">Tensión nominal del banco (V)</label>
             <input type="number" id="V_banco" placeholder="Ej: 12" min="0" step="any" required aria-describedby="error-V_banco">
-            <p id="error-V_banco" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-V_banco" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="I_max_banco">Corriente máxima de descarga continua del banco (A)</label>
+            <div class="form-field"><label for="I_max_banco">Corriente máxima de descarga continua del banco (A)</label>
             <p class="ayuda-campo">Continua, no de pico. Para gel, usa el valor de la tabla de descarga al tiempo de respaldo.</p>
             <input type="number" id="I_max_banco" placeholder="Ej: 145" min="0" step="any" required aria-describedby="error-I_max_banco">
-            <p id="error-I_max_banco" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-I_max_banco" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="masa_banco">Masa del banco (kg)</label>
+            <div class="form-field"><label for="masa_banco">Masa del banco (kg)</label>
             <input type="number" id="masa_banco" placeholder="Ej: 67" min="0" step="any" required aria-describedby="error-masa_banco">
-            <p id="error-masa_banco" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-masa_banco" class="error-campo" aria-live="polite" hidden></p></div>
 
             <button class="btn-calcular" onclick="calcularPaso1_4()">Calcular batería y cadenas</button>
             <div id="resultado-1-4" class="resultado"></div>
@@ -161,21 +152,21 @@
         <div class="paso">
             <h3>Paso 2.1 — Horas solares pico</h3>
             <div class="explicacion-hsp">
-                <p><strong>¿Qué son las HSP?</strong> Horas diarias equivalentes a 1000 W/m². Consulta el promedio anual de tu ciudad en la calculadora de Footprint Hero.</p>
+                <p><strong>¿Qué son las HSP?</strong> Horas diarias equivalentes a 1000 W/m². Consulta el valor de diseño para el sitio y época de estudio en la calculadora de Footprint Hero.</p>
                 <a href="https://footprinthero.com/peak-sun-hours-calculator#how-to-calculate-peak-sun-hours" target="_blank" rel="noopener" class="enlace-externo">📊 Calculadora de HSP (Footprint Hero)</a>
             </div>
-            <label for="HSP">Horas solares pico promedio anual (h)</label>
+            <div class="form-field"><label for="HSP">Horas solares pico de diseño (h/día)</label>
             <input type="number" id="HSP" placeholder="Ej: 3.6" min="0" step="any" required aria-describedby="error-HSP">
-            <p id="error-HSP" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-HSP" class="error-campo" aria-live="polite" hidden></p></div>
 
             <div class="bloque solo-nivel-2" hidden>
-                <label for="objetivo_solar">Objetivo de aprovechamiento solar (0–1)</label>
+                <div class="form-field"><label for="objetivo_solar">Objetivo de aprovechamiento solar (0–1)</label>
                 <p class="ayuda-campo">Fracción de la energía de carga que debe venir del sol. Por defecto 0,5. Solo aplica al nivel 2.</p>
                 <input type="number" id="objetivo_solar" value="0.5" min="0" max="1" step="any" aria-describedby="error-objetivo_solar">
-                <p id="error-objetivo_solar" class="error-campo" aria-live="polite" hidden></p>
+                <p id="error-objetivo_solar" class="error-campo" aria-live="polite" hidden></p></div>
             </div>
 
-            <button class="btn-calcular" onclick="registrarHSP()">Registrar datos solares</button>
+            <div class="form-field"><label for="sesiones_dia">Sesiones por vehículo y día</label><p class="ayuda-campo">Entero ≥ 1. La batería se calcula para el respaldo; el FV para la demanda diaria.</p><input type="number" id="sesiones_dia" value="1" min="0" max="1000000000" step="any" aria-describedby="error-sesiones_dia"><p id="error-sesiones_dia" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="PR">Performance ratio, PR (0–1)</label><p class="ayuda-campo">Desde potencia FV nominal hasta energía AC útil: incluye pérdidas de toda la cadena. No se vuelve a dividir por eficiencia del inversor.</p><input type="number" id="PR" value="0.8" min="0" max="1000000000" step="any" aria-describedby="error-PR"><p id="error-PR" class="error-campo" role="alert" hidden></p></div><button class="btn-calcular" onclick="registrarHSP()">Registrar datos solares</button>
             <div id="resultado-2-1" class="resultado"></div>
         </div>
 
@@ -187,73 +178,68 @@
         <div class="paso">
             <h3>Paso 2.3 — Panel y MPPT</h3>
 
-            <label for="P_panel">Potencia nominal del panel (W)</label>
+            <div class="form-field"><label for="P_panel">Potencia nominal del panel (W)</label>
             <input type="number" id="P_panel" placeholder="Ej: 710" min="0" step="any" required aria-describedby="error-P_panel">
-            <p id="error-P_panel" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-P_panel" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="V_nominal">Voltaje nominal del panel (V)</label>
-            <p class="ayuda-campo">Categoría nominal. Se usa para estimar corrientes; la verificación real usa Voc, Isc y Vmp.</p>
-            <select id="V_nominal" required>
+            <div class="form-field"><label for="V_nominal">Voltaje nominal del panel (V)</label>
+            <p class="ayuda-campo">Dato opcional descriptivo. No interviene en cálculos; se usan Voc/Vmp/Isc/Imp de placa.</p>
+            <select id="V_nominal">
                 <option value="">-- Selecciona --</option>
                 <option value="12">12 V</option>
                 <option value="24">24 V</option>
                 <option value="48">48 V</option>
             </select>
 
-            <label for="Voc_panel">Tensión de circuito abierto, Voc (V)</label>
+</div><div class="form-field"><label for="Vmp_panel">Tensión Vmp del panel (V)</label><p class="ayuda-campo">Ficha técnica, no tensión nominal.</p><input type="number" id="Vmp_panel" value="" min="0" max="1000000000" step="any" aria-describedby="error-Vmp_panel"><p id="error-Vmp_panel" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="Imp_panel">Corriente Imp del panel (A)</label><p class="ayuda-campo">Ficha técnica; P ≈ Vmp × Imp.</p><input type="number" id="Imp_panel" value="" min="0" max="1000000000" step="any" aria-describedby="error-Imp_panel"><p id="error-Imp_panel" class="error-campo" role="alert" hidden></p></div>            <div class="form-field"><label for="Voc_panel">Tensión de circuito abierto, Voc (V)</label>
             <input type="number" id="Voc_panel" placeholder="Ej: 48.94" min="0" step="any" required aria-describedby="error-Voc_panel">
-            <p id="error-Voc_panel" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-Voc_panel" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="Isc_panel">Corriente de cortocircuito, Isc (A)</label>
+            <div class="form-field"><label for="Isc_panel">Corriente de cortocircuito, Isc (A)</label>
             <input type="number" id="Isc_panel" placeholder="Ej: 18.45" min="0" step="any" required aria-describedby="error-Isc_panel">
-            <p id="error-Isc_panel" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-Isc_panel" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="beta_Voc">Coeficiente de temperatura de Voc, β_Voc (%/°C)</label>
+            <div class="form-field"><label for="beta_Voc">Coeficiente de temperatura de Voc, β_Voc (%/°C)</label>
             <p class="ayuda-campo">Normalmente negativo. Ejemplo: -0.25.</p>
             <input type="number" id="beta_Voc" placeholder="Ej: -0.25" step="any" required aria-describedby="error-beta_Voc">
-            <p id="error-beta_Voc" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-beta_Voc" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="T_min_diseno">Temperatura mínima de diseño (°C)</label>
+            <div class="form-field"><label for="T_min_diseno">Temperatura mínima de diseño (°C)</label>
             <input type="number" id="T_min_diseno" placeholder="Ej: 5" step="any" required aria-describedby="error-T_min_diseno">
-            <p id="error-T_min_diseno" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-T_min_diseno" class="error-campo" aria-live="polite" hidden></p></div>
 
             <div class="bloque solo-mppt-integrado" hidden>
-                <label for="Vmp_panel">Tensión en punto de máxima potencia, Vmp (V)</label>
-                <p class="ayuda-campo">De la ficha del panel.</p>
-                <input type="number" id="Vmp_panel" placeholder="Ej: 40.69" min="0" step="any" aria-describedby="error-Vmp_panel">
-                <p id="error-Vmp_panel" class="error-campo" aria-live="polite" hidden></p>
-
-                <label for="Voc_max_inversor">Tensión máxima de entrada del inversor (V)</label>
+                <div class="form-field"><label for="Voc_max_inversor">Tensión máxima de entrada del inversor (V)</label>
                 <p class="ayuda-campo">De la ficha del inversor (Voc máximo del arreglo).</p>
                 <input type="number" id="Voc_max_inversor" placeholder="Ej: 600" min="0" step="any" aria-describedby="error-Voc_max_inversor">
-                <p id="error-Voc_max_inversor" class="error-campo" aria-live="polite" hidden></p>
+                <p id="error-Voc_max_inversor" class="error-campo" aria-live="polite" hidden></p></div>
 
-                <label for="Vmppt_min">Mínimo del rango MPPT del inversor (V)</label>
+                <div class="form-field"><label for="Vmppt_min">Mínimo del rango MPPT del inversor (V)</label>
                 <p class="ayuda-campo">De la ficha del inversor, a la tensión de batería del sistema.</p>
                 <input type="number" id="Vmppt_min" placeholder="Ej: 200" min="0" step="any" aria-describedby="error-Vmppt_min">
-                <p id="error-Vmppt_min" class="error-campo" aria-live="polite" hidden></p>
+                <p id="error-Vmppt_min" class="error-campo" aria-live="polite" hidden></p></div>
 
-                <label for="Vmppt_max">Máximo del rango MPPT del inversor (V)</label>
+                <div class="form-field"><label for="Vmppt_max">Máximo del rango MPPT del inversor (V)</label>
                 <input type="number" id="Vmppt_max" placeholder="Ej: 450" min="0" step="any" aria-describedby="error-Vmppt_max">
-                <p id="error-Vmppt_max" class="error-campo" aria-live="polite" hidden></p>
+                <p id="error-Vmppt_max" class="error-campo" aria-live="polite" hidden></p></div>
             </div>
 
             <div class="bloque solo-mppt-externo">
-                <label for="Vmax_mppt">Tensión máxima de entrada del MPPT (V)</label>
+                <div class="form-field"><label for="Vmax_mppt">Tensión máxima de entrada del MPPT (V)</label>
                 <input type="number" id="Vmax_mppt" placeholder="Ej: 145" min="0" step="any" aria-describedby="error-Vmax_mppt">
-                <p id="error-Vmax_mppt" class="error-campo" aria-live="polite" hidden></p>
+                <p id="error-Vmax_mppt" class="error-campo" aria-live="polite" hidden></p></div>
 
-                <label for="Imax_mppt">Corriente máxima de entrada del MPPT (A)</label>
+                <div class="form-field"><label for="Imax_mppt">Corriente máxima de entrada del MPPT (A)</label>
                 <p class="ayuda-campo">Corriente FV del controlador, no la de carga desde red.</p>
                 <input type="number" id="Imax_mppt" placeholder="Ej: 80" min="0" step="any" aria-describedby="error-Imax_mppt">
-                <p id="error-Imax_mppt" class="error-campo" aria-live="polite" hidden></p>
+                <p id="error-Imax_mppt" class="error-campo" aria-live="polite" hidden></p></div>
 
-                <label for="Pmax_mppt">Potencia máxima de entrada del MPPT (W)</label>
+                <div class="form-field"><label for="Pmax_mppt">Potencia máxima de entrada del MPPT (W)</label>
                 <input type="number" id="Pmax_mppt" placeholder="Ej: 5000" min="0" step="any" aria-describedby="error-Pmax_mppt">
-                <p id="error-Pmax_mppt" class="error-campo" aria-live="polite" hidden></p>
+                <p id="error-Pmax_mppt" class="error-campo" aria-live="polite" hidden></p></div>
             </div>
 
-            <button class="btn-calcular" onclick="calcularPaso2_3()">Registrar datos del panel y MPPT</button>
+<div class="form-field"><label for="beta_Vmp">Coeficiente β Vmp (%/°C)</label><p class="ayuda-campo">Dato del fabricante; si falta, verificación térmica bloqueada.</p><input type="number" id="beta_Vmp" value="" min="-2" max="0" step="any" aria-describedby="error-beta_Vmp"><p id="error-beta_Vmp" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="T_max_celda">Temperatura máxima de célula (°C)</label><p class="ayuda-campo">No confundir con temperatura ambiente.</p><input type="number" id="T_max_celda" value="" min="-80" max="120" step="any" aria-describedby="error-T_max_celda"><p id="error-T_max_celda" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_min_comun">Mínimo MPPT externo (V)</label><p class="ayuda-campo">Para integrado usar el rango del bloque anterior.</p><input type="number" id="mppt_min_comun" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_min_comun"><p id="error-mppt_min_comun" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_max_comun">Máximo MPPT externo (V)</label><p class="ayuda-campo"></p><input type="number" id="mppt_max_comun" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_max_comun"><p id="error-mppt_max_comun" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_arranque">Tensión de arranque FV (V)</label><p class="ayuda-campo">Se exige conservadoramente Vmp caliente ≥ arranque.</p><input type="number" id="mppt_arranque" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_arranque"><p id="error-mppt_arranque" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_i_comun">Corriente operativa máxima FV integrada (A)</label><p class="ayuda-campo">Externo usa I máxima del bloque anterior.</p><input type="number" id="mppt_i_comun" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_i_comun"><p id="error-mppt_i_comun" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_isc">Isc FV admisible del controlador (A)</label><p class="ayuda-campo">Se compara con 1,25 × Isc × ramas; confirmar criterio del fabricante.</p><input type="number" id="mppt_isc" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_isc"><p id="error-mppt_isc" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_p_comun">Potencia FV máxima integrada (W)</label><p class="ayuda-campo">Externo usa potencia máxima del bloque anterior.</p><input type="number" id="mppt_p_comun" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_p_comun"><p id="error-mppt_p_comun" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_salida">Corriente máxima de carga de batería (A)</label><p class="ayuda-campo">Se compara de forma conservadora a tensión nominal.</p><input type="number" id="mppt_salida" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_salida"><p id="error-mppt_salida" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="mppt_banco">Tensión de banco admitida por MPPT (V)</label><p class="ayuda-campo">Valor seleccionado/documentado para este banco.</p><input type="number" id="mppt_banco" value="" min="0" max="1000000000" step="any" aria-describedby="error-mppt_banco"><p id="error-mppt_banco" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="eta_mppt">Eficiencia MPPT (0–1)</label><p class="ayuda-campo">Supuesto documentado de ficha; no se suma a PR.</p><input type="number" id="eta_mppt" value="" min="0" max="1000000000" step="any" aria-describedby="error-eta_mppt"><p id="error-eta_mppt" class="error-campo" role="alert" hidden></p></div>            <button class="btn-calcular" onclick="calcularPaso2_3()">Registrar datos del panel y MPPT</button>
             <div id="resultado-2-3" class="resultado"></div>
         </div>
 
@@ -268,21 +254,21 @@
     <!-- SECCIÓN 3 -->
     <section class="seccion" id="seccion-inversor">
         <h2>3. Dimensionamiento del inversor</h2>
-        <p class="ayuda-seccion">Primero selecciona una configuración de arreglo válida en la Sección 2.</p>
+        <p class="ayuda-seccion">El inversor se evalúa con el banco DC y la carga AC. La selección FV se comprueba por separado contra el MPPT.</p>
         <div class="paso">
             <h3>Verificación del inversor</h3>
 
-            <label for="P_unidad_inversor">Potencia nominal de salida por unidad (W)</label>
+            <div class="form-field"><label for="P_unidad_inversor">Potencia nominal de salida por unidad (W)</label>
             <p class="ayuda-campo">Si es trifásico nativo, la potencia del equipo. Si son monofásicos en paralelo, la de cada unidad.</p>
             <input type="number" id="P_unidad_inversor" placeholder="Ej: 12000" min="0" step="any" required aria-describedby="error-P_unidad_inversor">
-            <p id="error-P_unidad_inversor" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-P_unidad_inversor" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="N_unidades_inversor">Número de unidades</label>
+            <div class="form-field"><label for="N_unidades_inversor">Número de unidades</label>
             <p class="ayuda-campo">Trifásico nativo: 1. Monofásicos en paralelo: cuántas unidades.</p>
             <input type="number" id="N_unidades_inversor" value="1" placeholder="Ej: 1" min="1" step="1" required aria-describedby="error-N_unidades_inversor">
-            <p id="error-N_unidades_inversor" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-N_unidades_inversor" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <button class="btn-calcular" onclick="calcularPaso3()">Verificar inversor</button>
+<div class="form-field"><label for="inv_nominal">Tensión nominal DC del inversor (V)</label><p class="ayuda-campo"></p><input type="number" id="inv_nominal" value="" min="0" max="1000000000" step="any" aria-describedby="error-inv_nominal"><p id="error-inv_nominal" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="inv_min">Tensión mínima DC del inversor (V)</label><p class="ayuda-campo"></p><input type="number" id="inv_min" value="" min="0" max="1000000000" step="any" aria-describedby="error-inv_min"><p id="error-inv_min" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="inv_max">Tensión máxima DC del inversor (V)</label><p class="ayuda-campo"></p><input type="number" id="inv_max" value="" min="0" max="1000000000" step="any" aria-describedby="error-inv_max"><p id="error-inv_max" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="inv_ac">Salida AC nominal del inversor (V)</label><p class="ayuda-campo"></p><input type="number" id="inv_ac" value="" min="0" max="1000000000" step="any" aria-describedby="error-inv_ac"><p id="error-inv_ac" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="inv_hz">Frecuencia de salida del inversor (Hz)</label><p class="ayuda-campo"></p><input type="number" id="inv_hz" value="" min="0" max="1000000000" step="any" aria-describedby="error-inv_hz"><p id="error-inv_hz" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="frecuencia_carga">Frecuencia requerida por la carga (Hz)</label><p class="ayuda-campo"></p><input type="number" id="frecuencia_carga" value="60" min="0" max="1000000000" step="any" aria-describedby="error-frecuencia_carga"><p id="error-frecuencia_carga" class="error-campo" role="alert" hidden></p></div><p class="ayuda-campo">Potencia pico, ventana completa de batería y capacidad de paralelo/sincronización requieren ficha. No se garantizan con la suma de potencias.</p>            <button class="btn-calcular" onclick="calcularPaso3()">Verificar inversor</button>
             <div id="resultado-3" class="resultado"></div>
         </div>
     </section>
@@ -295,7 +281,7 @@
             <div class="info-origen-ac"><div><small>Potencia del paso 1.1</small><strong id="potencia_ac_origen">Sin registrar</strong></div><div><small>Conexión asumida</small><strong id="configuracion_ac"></strong></div></div>
             <p id="estado-potencia-ac" class="texto-ayuda-ac" aria-live="polite"></p>
 
-            <label for="tension_ac">Tensión de alimentación del punto de carga</label>
+            <div class="form-field"><label for="tension_ac">Tensión de alimentación del punto de carga</label>
             <p class="ayuda-campo">Selecciona la tensión real de alimentación. Para el caso trifásico de nivel 2, elige 380 V.</p>
             <select id="tension_ac" aria-describedby="ayuda-tension_ac">
                 <option value="110">110 V monofásica</option>
@@ -305,18 +291,18 @@
                 <option value="380">380 V trifásica (3 fases)</option>
             </select>
 
-            <label for="distancia_ac">Distancia de ida hasta el cargador (m)</label>
+            </div><div class="form-field"><label for="distancia_ac">Distancia de ida hasta el cargador (m)</label>
             <p class="ayuda-campo">Recorrido de ida; la herramienta incluye el retorno (en trifásico, el cálculo usa las tres fases).</p>
             <input type="number" id="distancia_ac" placeholder="Ej: 20" min="0" max="10000" step="any" required aria-describedby="error-distancia_ac">
-            <p id="error-distancia_ac" class="error-campo" aria-live="polite" hidden></p>
+            <p id="error-distancia_ac" class="error-campo" aria-live="polite" hidden></p></div>
 
-            <label for="entorno_ac">Entorno de instalación</label>
+            <div class="form-field"><label for="entorno_ac">Entorno de instalación</label>
             <select id="entorno_ac" aria-describedby="ayuda-entorno_ac">
                 <option value="domiciliario">Domiciliario o similar: circuito exclusivo mínimo 20 A</option>
                 <option value="estacion">Estación dedicada: sin mínimo domiciliario automático</option>
             </select>
 
-            <button type="button" class="btn-calcular" id="btn-calcular-ac">Calcular conductores AC</button>
+</div><div class="form-field"><label for="factor_ac">Factor conjunto de corrección de ampacidad (0–1)</label><p class="ayuda-campo">Producto de factores térmicos/agrupamiento conocidos. 1 conserva el escenario sin ajustes; no acredita instalación.</p><input type="number" id="factor_ac" value="1" min="0" max="1000000000" step="any" aria-describedby="error-factor_ac"><p id="error-factor_ac" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="fp_ac">Factor de potencia de carga (0–1)</label><p class="ayuda-campo">Usar dato real del cargador. Caída aproximada resistiva sin reactancia.</p><input type="number" id="fp_ac" value="1" min="0" max="1000000000" step="any" aria-describedby="error-fp_ac"><p id="error-fp_ac" class="error-campo" role="alert" hidden></p></div>            <button type="button" class="btn-calcular" id="btn-calcular-ac">Calcular conductores AC</button>
             <div id="resultado-4" class="resultado resultado-ac" aria-live="polite"></div>
         </div>
         <details class="referencia-ac"><summary>Referencias y verificaciones pendientes</summary>
@@ -325,11 +311,12 @@
         </details>
     </section>
 
+    <section class="seccion" id="seccion-dc"><h2>5. Conductores DC y protecciones</h2><p>Tramo batería–inversor. Cobre, ρ = 0,021 Ω·mm²/m, ida y retorno. No selecciona fusible ni certifica calibre.</p><div class="paso"><div class="form-field"><label for="dc_longitud">Longitud de ida DC (m)</label><p class="ayuda-campo"></p><input type="number" id="dc_longitud" value="" min="0" max="1000000000" step="any" aria-describedby="error-dc_longitud"><p id="error-dc_longitud" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="dc_seccion">Sección candidata (mm²)</label><p class="ayuda-campo"></p><input type="number" id="dc_seccion" value="" min="0" max="1000000000" step="any" aria-describedby="error-dc_seccion"><p id="error-dc_seccion" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="dc_ampacidad">Ampacidad base documentada (A)</label><p class="ayuda-campo"></p><input type="number" id="dc_ampacidad" value="" min="0" max="1000000000" step="any" aria-describedby="error-dc_ampacidad"><p id="error-dc_ampacidad" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="dc_factor">Factor térmico/agrupamiento (0–1)</label><p class="ayuda-campo"></p><input type="number" id="dc_factor" value="1" min="0" max="1000000000" step="any" aria-describedby="error-dc_factor"><p id="error-dc_factor" class="error-campo" role="alert" hidden></p></div><div class="form-field"><label for="dc_caida">Caída máxima de diseño (%)</label><p class="ayuda-campo"></p><input type="number" id="dc_caida" value="3" min="0" max="1000000000" step="any" aria-describedby="error-dc_caida"><p id="error-dc_caida" class="error-campo" role="alert" hidden></p></div><button class="btn-calcular" onclick="calcularDC()">Evaluar conductor DC</button><div id="resultado-dc" class="resultado" aria-live="polite"></div><p>Verificar fusible DC próximo al banco, tensión y capacidad de corte, seccionamiento, terminales, BMS, PE, diferencial EVSE, sobretensiones y conmutación enclavada de red. Un relé de laboratorio no es protección certificada.</p></div></section>
     <section class="seccion dudas-uso" aria-labelledby="titulo-dudas">
         <h2 id="titulo-dudas">Ayuda</h2>
         <details><summary>¿Qué significa el objetivo solar?</summary><p>Es la fracción de la energía de carga que debe venir del sol en el nivel 2. En el nivel 1 no se elige: el sol debe recargar la energía que entrega la batería.</p></details>
-        <details><summary>¿Por qué el PR es fijo?</summary><p>Es un valor de referencia ilustrativo (0,75), no medido para este prototipo. Puede cambiar cuando haya datos de campo o fichas de los equipos seleccionados.</p></details>
-        <details><summary>¿Qué pasa si aumento el tiempo de respaldo?</summary><p>El banco crece en proporción. El mínimo de diseño es 1 h.</p></details>
+        <details><summary>¿Qué incluye el PR?</summary><p>Es editable. Aquí representa pérdidas globales desde panel nominal hasta energía AC útil. Es una estimación diaria, no potencia garantizada.</p></details>
+        <details><summary>¿Qué pasa si aumento el tiempo de respaldo?</summary><p>El banco crece en proporción. Se admiten duraciones positivas hasta 168 h en este modelo.</p></details>
     </section>
 
     <footer class="pie">
@@ -338,9 +325,11 @@
     </footer>
 </div>
 </main>
+<script src="motor.js?v=20261108-num2"></script>
 <script src="calculos.js"></script>
 <script src="cables_ac.js"></script>
 <script src="ayuda_dimensionador.js"></script>
+<script src="mejoras.js?v=20261108-num2"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -34,7 +34,7 @@
     ])
   });
 
-  function calculateAcCable(distanceM, powerW, voltageV = CONFIG.defaultVoltage, residential = true) {
+  function calculateAcCable(distanceM, powerW, voltageV = CONFIG.defaultVoltage, residential = true, correction = 1, pf = 1) {
     const distance = Number(distanceM);
     const power = Number(powerW);
     const voltage = Number(voltageV);
@@ -52,22 +52,23 @@
       return { ok: false, error: 'Los valores exceden el alcance de esta herramienta de dimensionamiento preliminar.' };
     }
 
+    if (!Number.isFinite(correction) || correction <= 0 || correction > 1 || !Number.isFinite(pf) || pf <= 0 || pf > 1) return {ok:false,error:'Factor de corrección y FP deben estar entre 0 y 1.'};
     const trifasica = voltage === 380;
     // Monofásico: ΔV = 2·ρ·L·I/A (ida y retorno)
     // Trifásico:  ΔV = √3·ρ·L·I/A (tres conductores equilibrados)
     const k = trifasica ? Math.sqrt(3) : 2;
     const currentA = trifasica
-      ? power / (Math.sqrt(3) * voltage * CONFIG.powerFactor)
-      : power / (voltage * CONFIG.powerFactor);
+      ? power / (Math.sqrt(3) * voltage * pf)
+      : power / (voltage * pf);
     const designCurrentA = currentA * CONFIG.continuousLoadFactor;
     const nominalCircuitA = Math.max(designCurrentA, residential ? CONFIG.minCircuitAmps : 0);
     const maxDropV = voltage * CONFIG.maxDropPercent / 100;
     const minimumSectionDropMm2 =
       k * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / maxDropV;
 
-    const byAmpacity = CONFIG.sizes.find(c => c.ampacityA >= nominalCircuitA);
+    const byAmpacity = CONFIG.sizes.find(c => c.ampacityA * correction >= nominalCircuitA);
     const byDrop = CONFIG.sizes.find(c => c.sectionMm2 >= minimumSectionDropMm2);
-    const cable = CONFIG.sizes.find(c => c.ampacityA >= nominalCircuitA &&
+    const cable = CONFIG.sizes.find(c => c.ampacityA * correction >= nominalCircuitA &&
       c.sectionMm2 >= minimumSectionDropMm2);
 
     if (!cable) {
@@ -90,17 +91,18 @@
       wireNames = 'fases A, B y C';
       formulaText = `I = P ÷ (√3 × ${voltage} V × FP)`;
       sectionFormula = '√3·ρ·L·I ÷ ΔV_máx';
-      assumptions = `Circuito trifásico equilibrado, cobre; FP=1; distancia de ida (ΔV = √3·ρ·L·I/A); ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}. Neutro y conductor de protección (PE) no dimensionados.`;
+      assumptions = `Circuito trifásico equilibrado, cobre; FP=${pf}; distancia de ida (ΔV = √3·ρ·L·I/A); ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores en tabla base; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}. Neutro y conductor de protección (PE) no dimensionados.`;
     } else {
       connection = voltage <= 120 ? 'L-N (fase y neutro)' : 'L1-L2 (dos líneas)';
       wireNames = voltage <= 120 ? 'fase y neutro' : 'L1 y L2';
-      formulaText = `I = P ÷ ${voltage} V`;
+      formulaText = `I = P ÷ (${voltage} V × ${pf})`;
       sectionFormula = '2·ρ·L·I ÷ ΔV_máx';
-      assumptions = `Circuito AC monofásico ${voltage <= 120 ? 'L-N' : 'L1-L2'}, cobre; FP=1; ida y retorno; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}.`;
+      assumptions = `Circuito AC monofásico ${voltage <= 120 ? 'L-N' : 'L1-L2'}, cobre; FP=${pf}; ida y retorno; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores en tabla base; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}.`;
     }
 
     return {
       ok: true,
+      correctedAmpacityA: cable.ampacityA * correction,
       distanceM: distance,
       powerW: power,
       voltageV: voltage,
@@ -121,7 +123,7 @@
       controllingCriterion: mechanism,
       overPrototypeLimit: currentA > CONFIG.prototypeCurrentLimit,
       outsidePrototypeVoltage: voltage !== CONFIG.defaultVoltage,
-      assumptions
+      assumptions: assumptions + ` Factor corrector aplicado: ${correction}; FP aplicado: ${pf}. Caída resistiva conservadora, sin reactancia.`,
     };
   }
 
@@ -184,7 +186,7 @@
   function showResult(res) {
     const warnings = [
       res.overPrototypeLimit
-        ? `<p class="aviso-cable"><strong>Corriente superior a 10 A:</strong> la corriente calculada (${fmt(res.currentA)} A) supera el límite del prototipo; los componentes del caso deben soportarla.</p>`
+        ? `<p class="aviso-cable"><strong>Corriente superior a 10 A:</strong> la corriente calculada (${fmt(res.currentA)} A) supera el umbral ilustrativo de 10 A; no hay límite de placa documentado; los componentes del caso deben soportarla.</p>`
         : '',
       res.outsidePrototypeVoltage
         ? `<p class="aviso-cable"><strong>Tensión fuera del escenario de 110 V:</strong> ${res.voltageV} V corresponde a un caso de dimensionamiento adicional. Verifica inversor, EVSE, vehículo y protecciones para esta tensión.</p>`
@@ -204,7 +206,7 @@
         <div><small>Tensión y conexión</small><strong>${res.voltageV} V · ${res.connection}</strong></div>
         <div><small>Corriente de carga</small><strong>${fmt(res.currentA)} A</strong></div>
         <div><small>Corriente de diseño (×1,25)</small><strong>${fmt(res.designCurrentA)} A</strong></div>
-        <div><small>Ampacidad de referencia</small><strong>${fmt(res.wire.ampacityA, 0)} A</strong></div>
+        <div><small>Ampacidad base / corregida</small><strong>${fmt(res.wire.ampacityA, 0)} / ${fmt(res.correctedAmpacityA)} A</strong></div>
         <div><small>Caída de tensión calculada</small><strong>${fmt(res.voltageDropV)} V (${fmt(res.voltageDropPercent)} %)</strong></div>
         <div><small>Caída máxima objetivo</small><strong>${fmt(res.voltageDropLimitV)} V (3,00 %)</strong></div>
         <div><small>Sección por caída, teórica</small><strong>${fmt(res.minimumSectionDropMm2)} mm²</strong></div>
@@ -213,7 +215,7 @@
       </div>
       ${warnings}
       <p class="nota-ac"><strong>Supuestos aplicados:</strong> ${res.assumptions}</p>
-      <p class="nota-ac"><strong>Cómo se obtuvo:</strong> ${res.formulaText}; I<sub>diseño</sub> = 1,25·I; S<sub>caída</sub> = ${res.sectionFormula}, con ρ = 0,021 Ω·mm²/m. Se selecciona el primer AWG que cumpla caída ≤ 3 % y ampacidad ≥ ${fmt(res.minimumCircuitAmpacityA)} A.</p>
+      <p class="nota-ac"><strong>Cómo se obtuvo:</strong> ${res.formulaText}; I<sub>diseño</sub> = 1,25·I; S<sub>caída</sub> = ${res.sectionFormula}, con ρ = 0,021 Ω·mm²/m. Se selecciona el primer AWG que cumpla caída ≤ 3 % y ampacidad corregida ≥ ${fmt(res.minimumCircuitAmpacityA)} A.</p>
       <p class="nota-ac"><strong>Verificación pendiente:</strong> revisar NTC 2050 y RETIE aplicables, terminales, ficha del equipo, protección (MCB), diferencial y conductor de protección (PE). El mínimo de 20 A aplica a circuitos domiciliarios o similares según RETIE, art. 3.17.7(b).</p>
       <div class="acciones-cable"><button type="button" class="btn-copiar-ac" id="copiar-ac">Copiar resultados</button><span id="mensaje-copiar-ac" aria-live="polite"></span></div>
     `;
@@ -248,12 +250,15 @@ Sujeto a revisión de RETIE/NTC 2050, condiciones de montaje y protecciones.`;
       markError('Registra primero la potencia en el Paso 1.1 con el botón «Registrar potencia», y luego vuelve aquí.');
       return;
     }
+    limpiarErrorCampo('distancia_ac');
     const d = distanceEl.value.trim();
     if (d === '') {
-      markError('Ingresa la distancia de ida entre el tablero o inversor y el punto de carga.');
+      mostrarError('Ingresa una distancia de ida mayor que cero.', 'distancia_ac');
       return;
     }
-    const res = calculateAcCable(Number(d), p, Number(voltageEl.value), environmentEl.value === 'domiciliario');
+    if (!Number.isFinite(Number(d)) || Number(d) <= 0 || Number(d) > 10000) { mostrarError('Distancia fuera del alcance (0 a 10000 m).', 'distancia_ac'); return; }
+    for (const id of ['factor_ac','fp_ac']) { const n=Number(document.getElementById(id).value); if (!(n>0 && n<=1)) { mostrarError('Introduce una fracción mayor que 0 y hasta 1.',id); return; } limpiarErrorCampo(id); }
+    const res = calculateAcCable(Number(d), p, Number(voltageEl.value), environmentEl.value === 'domiciliario', Number(document.getElementById('factor_ac').value), Number(document.getElementById('fp_ac').value));
     if (!res.ok) {
       markError(res.error);
       return;
@@ -266,7 +271,6 @@ Sujeto a revisión de RETIE/NTC 2050, condiciones de montaje y protecciones.`;
   document.addEventListener('click', () => {
     setTimeout(() => {
       showPowerSource();
-      if (out.classList.contains('visible')) run();
     }, 0);
   }, true);
 
@@ -292,5 +296,6 @@ Sujeto a revisión de RETIE/NTC 2050, condiciones de montaje y protecciones.`;
     showPowerSource();
   });
 
+  document.addEventListener('cambio-solar', showPowerSource);
   showPowerSource();
 })(typeof globalThis === 'object' ? globalThis : this);

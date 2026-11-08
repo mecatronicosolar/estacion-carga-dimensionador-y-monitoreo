@@ -2,7 +2,7 @@
 (() => {
     const nombres = {
         P_dispositivo: 'Potencia de carga',
-        t_sesion: 'Duración de la sesión',
+        t_respaldo: 'Duración de la sesión',
         num_dispositivos: 'Número de vehículos simultáneos',
         HSP: 'Horas solares pico',
         P_panel: 'Potencia nominal del panel'
