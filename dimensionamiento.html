@@ -25,7 +25,7 @@
             <li><strong>Sección 1:</strong> batería, con su capacidad, cadenas en serie y en paralelo</li>
             <li><strong>Sección 2:</strong> paneles y verificación con el MPPT</li>
             <li><strong>Sección 3:</strong> inversor, potencia y corriente de la batería</li>
-            <li><strong>Sección 4:</strong> conductores AC del punto de carga</li>
+            <li><strong>Sección 4:</strong> conductores AC del punto de carga (monofásico y trifásico)</li>
         </ul>
         <p>Los valores de referencia y las limitaciones se documentan en el README del repositorio.</p>
     </section>
@@ -132,8 +132,8 @@
             </select>
 
             <label for="C_banco">Capacidad del banco comercial (Ah)</label>
-            <p class="ayuda-campo">Capacidad nominal de la ficha, normalmente C20.</p>
-            <input type="number" id="C_banco" placeholder="Ej: 100" min="0" step="any" required aria-describedby="error-C_banco">
+            <p class="ayuda-campo">Capacidad nominal de la ficha, normalmente C20. Si la ficha solo publica otra tasa de descarga, usa la del tiempo de respaldo (por ejemplo, 1 h).</p>
+            <input type="number" id="C_banco" placeholder="Ej: 162" min="0" step="any" required aria-describedby="error-C_banco">
             <p id="error-C_banco" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="V_banco">Tensión nominal del banco (V)</label>
@@ -141,12 +141,12 @@
             <p id="error-V_banco" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="I_max_banco">Corriente máxima de descarga continua del banco (A)</label>
-            <p class="ayuda-campo">Continua, no de pico.</p>
-            <input type="number" id="I_max_banco" placeholder="Ej: 20" min="0" step="any" required aria-describedby="error-I_max_banco">
+            <p class="ayuda-campo">Continua, no de pico. Para gel, usa el valor de la tabla de descarga al tiempo de respaldo.</p>
+            <input type="number" id="I_max_banco" placeholder="Ej: 145" min="0" step="any" required aria-describedby="error-I_max_banco">
             <p id="error-I_max_banco" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="masa_banco">Masa del banco (kg)</label>
-            <input type="number" id="masa_banco" placeholder="Ej: 30" min="0" step="any" required aria-describedby="error-masa_banco">
+            <input type="number" id="masa_banco" placeholder="Ej: 67" min="0" step="any" required aria-describedby="error-masa_banco">
             <p id="error-masa_banco" class="error-campo" aria-live="polite" hidden></p>
 
             <button class="btn-calcular" onclick="calcularPaso1_4()">Calcular batería y cadenas</button>
@@ -188,7 +188,7 @@
             <h3>Paso 2.3 — Panel y MPPT</h3>
 
             <label for="P_panel">Potencia nominal del panel (W)</label>
-            <input type="number" id="P_panel" placeholder="Ej: 625" min="0" step="any" required aria-describedby="error-P_panel">
+            <input type="number" id="P_panel" placeholder="Ej: 710" min="0" step="any" required aria-describedby="error-P_panel">
             <p id="error-P_panel" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="V_nominal">Voltaje nominal del panel (V)</label>
@@ -201,11 +201,11 @@
             </select>
 
             <label for="Voc_panel">Tensión de circuito abierto, Voc (V)</label>
-            <input type="number" id="Voc_panel" placeholder="Ej: 48.7" min="0" step="any" required aria-describedby="error-Voc_panel">
+            <input type="number" id="Voc_panel" placeholder="Ej: 48.94" min="0" step="any" required aria-describedby="error-Voc_panel">
             <p id="error-Voc_panel" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="Isc_panel">Corriente de cortocircuito, Isc (A)</label>
-            <input type="number" id="Isc_panel" placeholder="Ej: 16.15" min="0" step="any" required aria-describedby="error-Isc_panel">
+            <input type="number" id="Isc_panel" placeholder="Ej: 18.45" min="0" step="any" required aria-describedby="error-Isc_panel">
             <p id="error-Isc_panel" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="beta_Voc">Coeficiente de temperatura de Voc, β_Voc (%/°C)</label>
@@ -220,21 +220,21 @@
             <div class="bloque solo-mppt-integrado" hidden>
                 <label for="Vmp_panel">Tensión en punto de máxima potencia, Vmp (V)</label>
                 <p class="ayuda-campo">De la ficha del panel.</p>
-                <input type="number" id="Vmp_panel" placeholder="Ej: 40.45" min="0" step="any" aria-describedby="error-Vmp_panel">
+                <input type="number" id="Vmp_panel" placeholder="Ej: 40.69" min="0" step="any" aria-describedby="error-Vmp_panel">
                 <p id="error-Vmp_panel" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Voc_max_inversor">Tensión máxima de entrada del inversor (V)</label>
                 <p class="ayuda-campo">De la ficha del inversor (Voc máximo del arreglo).</p>
-                <input type="number" id="Voc_max_inversor" placeholder="Ej: 145" min="0" step="any" aria-describedby="error-Voc_max_inversor">
+                <input type="number" id="Voc_max_inversor" placeholder="Ej: 600" min="0" step="any" aria-describedby="error-Voc_max_inversor">
                 <p id="error-Voc_max_inversor" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Vmppt_min">Mínimo del rango MPPT del inversor (V)</label>
-                <p class="ayuda-campo">A la tensión de batería del sistema (ej. 48 V).</p>
-                <input type="number" id="Vmppt_min" placeholder="Ej: 60" min="0" step="any" aria-describedby="error-Vmppt_min">
+                <p class="ayuda-campo">De la ficha del inversor, a la tensión de batería del sistema.</p>
+                <input type="number" id="Vmppt_min" placeholder="Ej: 200" min="0" step="any" aria-describedby="error-Vmppt_min">
                 <p id="error-Vmppt_min" class="error-campo" aria-live="polite" hidden></p>
 
                 <label for="Vmppt_max">Máximo del rango MPPT del inversor (V)</label>
-                <input type="number" id="Vmppt_max" placeholder="Ej: 130" min="0" step="any" aria-describedby="error-Vmppt_max">
+                <input type="number" id="Vmppt_max" placeholder="Ej: 450" min="0" step="any" aria-describedby="error-Vmppt_max">
                 <p id="error-Vmppt_max" class="error-campo" aria-live="polite" hidden></p>
             </div>
 
@@ -274,7 +274,7 @@
 
             <label for="P_unidad_inversor">Potencia nominal de salida por unidad (W)</label>
             <p class="ayuda-campo">Si es trifásico nativo, la potencia del equipo. Si son monofásicos en paralelo, la de cada unidad.</p>
-            <input type="number" id="P_unidad_inversor" placeholder="Ej: 4000" min="0" step="any" required aria-describedby="error-P_unidad_inversor">
+            <input type="number" id="P_unidad_inversor" placeholder="Ej: 12000" min="0" step="any" required aria-describedby="error-P_unidad_inversor">
             <p id="error-P_unidad_inversor" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="N_unidades_inversor">Número de unidades</label>
@@ -287,36 +287,41 @@
         </div>
     </section>
 
-    <!-- SECCIÓN 4: cálculo monofásico en cables_ac.js -->
+    <!-- SECCIÓN 4 -->
     <section class="seccion" id="seccion-conductores">
         <h2>4. Dimensionamiento de conductores eléctricos AC</h2>
-        <div class="descripcion-seccion"><p>Usa la potencia del paso 1.1 para estimar los conductores de un punto de carga. Completa la tensión, la distancia de ida y el entorno antes de calcular.</p></div>
+        <div class="descripcion-seccion"><p>Usa la potencia del paso 1.1 para estimar los conductores de un punto de carga. Completa la tensión, la distancia de ida y el entorno antes de calcular.</p><p>Monofásico: 110, 120, 220 o 240 V. Trifásico: 380 V entre fases.</p></div>
         <div class="paso paso-cables-ac">
             <div class="info-origen-ac"><div><small>Potencia del paso 1.1</small><strong id="potencia_ac_origen">Sin registrar</strong></div><div><small>Conexión asumida</small><strong id="configuracion_ac"></strong></div></div>
             <p id="estado-potencia-ac" class="texto-ayuda-ac" aria-live="polite"></p>
 
-            <label for="tension_ac">Tensión de alimentación del punto de carga (V)</label>
-<select id="tension_ac">
-    <option value="110">110 V monofásica</option>
-    <option value="120">120 V monofásica</option>
-    <option value="220">220 V monofásica</option>
-    <option value="240">240 V monofásica</option>
-    <option value="380">380 V trifásica (3 fases)</option>
-</select>
+            <label for="tension_ac">Tensión de alimentación del punto de carga</label>
+            <p class="ayuda-campo">Selecciona la tensión real de alimentación. Para el caso trifásico de nivel 2, elige 380 V.</p>
+            <select id="tension_ac" aria-describedby="ayuda-tension_ac">
+                <option value="110">110 V monofásica</option>
+                <option value="120">120 V monofásica</option>
+                <option value="220">220 V monofásica</option>
+                <option value="240">240 V monofásica</option>
+                <option value="380">380 V trifásica (3 fases)</option>
+            </select>
+
             <label for="distancia_ac">Distancia de ida hasta el cargador (m)</label>
-            <p class="ayuda-campo">Recorrido de ida; la herramienta incluye el retorno.</p>
+            <p class="ayuda-campo">Recorrido de ida; la herramienta incluye el retorno (en trifásico, el cálculo usa las tres fases).</p>
             <input type="number" id="distancia_ac" placeholder="Ej: 20" min="0" max="10000" step="any" required aria-describedby="error-distancia_ac">
             <p id="error-distancia_ac" class="error-campo" aria-live="polite" hidden></p>
 
             <label for="entorno_ac">Entorno de instalación</label>
-            <select id="entorno_ac"><option value="domiciliario">Domiciliario o similar: circuito exclusivo mínimo 20 A</option><option value="estacion">Estación dedicada: sin mínimo domiciliario automático</option></select>
+            <select id="entorno_ac" aria-describedby="ayuda-entorno_ac">
+                <option value="domiciliario">Domiciliario o similar: circuito exclusivo mínimo 20 A</option>
+                <option value="estacion">Estación dedicada: sin mínimo domiciliario automático</option>
+            </select>
 
             <button type="button" class="btn-calcular" id="btn-calcular-ac">Calcular conductores AC</button>
             <div id="resultado-4" class="resultado resultado-ac" aria-live="polite"></div>
         </div>
         <details class="referencia-ac"><summary>Referencias y verificaciones pendientes</summary>
             <p><a href="https://www.minenergia.gov.co/documents/15921/Libro-3-Resolucion-40284-23-06-2026.pdf" target="_blank" rel="noopener">RETIE, Resolución 40284 de 2026, Libro 3, art. 3.17.7</a>.</p>
-            <p>El 3 % es objetivo de diseño, no certificación. Validar temperatura, agrupamiento, canalización, terminales, protección y diferencial.</p>
+            <p>El 3 % es objetivo de diseño, no certificación. Validar temperatura, agrupamiento, canalización, terminales, protección y diferencial. El neutro y el conductor de protección (PE) no se dimensionan en esta herramienta.</p>
         </details>
     </section>
 
