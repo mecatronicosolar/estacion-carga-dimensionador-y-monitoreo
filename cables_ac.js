@@ -1,17 +1,13 @@
 /*
- * Dimensionamiento preliminar de conductores AC para estaciones de carga a 110, 120, 220 o 240 V.
- * V1.0 - Uso académico. No sustituye el diseño de instalación por personal competente.
- * Entradas: potencia del paso 1.1 (P_dispositivo), tensión (tension_ac) y distancia de ida (distancia_ac).
- * Configuración: cobre, circuito AC monofásico de 2 conductores activos: L-N (110/120 V) o L1-L2 (220/240 V), FP=1.
- * Criterio de caída de tensión: 3% en el circuito analizado.
- * Resistencia aproximada: rho = 0.021 ohm*mm2/m (cobre a ~75 °C), conservadora.
- * Ampacidades de referencia: columna 60 °C, Cu, tres conductores portadores o menos.
- * Sin factores de corrección por temperatura, agrupamiento o métodos de instalación.
- * Nota: se adopta circuito independiente de al menos 20 A para entornos domiciliarios
- * o similares según RETIE 2026, Art. 3.17.7, literal b. No aplica indiscriminadamente.
+ * Dimensionamiento preliminar de conductores AC.
+ * Monofásico: 110, 120, 220 o 240 V (L-N o L1-L2).
+ * Trifásico: 380 V entre fases (3 fases equilibradas).
+ * Cobre, FP=1, criterio de caída 3 %, ρ = 0,021 Ω·mm²/m.
+ * Uso académico. No sustituye el diseño de instalación por personal competente.
  */
 (function (root) {
   'use strict';
+
   const CONFIG = Object.freeze({
     defaultVoltage: 110,
     supportedVoltages: Object.freeze([110, 120, 220, 240, 380]),
@@ -42,6 +38,7 @@
     const distance = Number(distanceM);
     const power = Number(powerW);
     const voltage = Number(voltageV);
+
     if (!CONFIG.supportedVoltages.includes(voltage)) {
       return { ok: false, error: 'Selecciona una tensión admitida: 110, 120, 220, 240 o 380 V.' };
     }
@@ -49,16 +46,15 @@
       return { ok: false, error: 'La distancia debe ser mayor que 0 m.' };
     }
     if (!Number.isFinite(power) || power <= 0) {
-      return { ok: false, error: 'Primero registra una potencia de carga mayor que 0 W en la Sección 1.' };
+      return { ok: false, error: 'Registra primero la potencia de carga en el paso 1.1.' };
     }
     if (distance > 10000 || power > 50000) {
       return { ok: false, error: 'Los valores exceden el alcance de esta herramienta de dimensionamiento preliminar.' };
     }
 
     const trifasica = voltage === 380;
-
-    // Monofásico: I = P/V, ΔV = 2·ρ·L·I/A (ida y retorno)
-    // Trifásico:  I = P/(√3·V·FP), ΔV = √3·ρ·L·I/A (tres conductores equilibrados)
+    // Monofásico: ΔV = 2·ρ·L·I/A (ida y retorno)
+    // Trifásico:  ΔV = √3·ρ·L·I/A (tres conductores equilibrados)
     const k = trifasica ? Math.sqrt(3) : 2;
     const currentA = trifasica
       ? power / (Math.sqrt(3) * voltage * CONFIG.powerFactor)
@@ -135,43 +131,48 @@
     module.exports = { calculateAcCable, CONFIG };
   }
 
-  // La parte de interfaz (document.getElementById, showResult, etc.) se mantiene igual,
-  // con el cambio del paso 3 de esta respuesta.
-})(typeof globalThis === 'object' ? globalThis : this);
-  root.calcularConductorAC = calculateAcCable;
-  // Compatibilidad con la interfaz de 110 V anterior.
-  root.calcularConductorAC110 = (distance, power) => calculateAcCable(distance, power, 110);
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { calculateAcCable, CONFIG };
-  }
-
   if (typeof document === 'undefined') return;
-  const powerEl = document.getElementById('P_dispositivo');
+
+  // ===== INTERFAZ =====
   const distanceEl = document.getElementById('distancia_ac');
   const voltageEl = document.getElementById('tension_ac');
   const environmentEl = document.getElementById('entorno_ac');
   const connectionEl = document.getElementById('configuracion_ac');
-  const out = document.getElementById('resultado-4');
-  const btn = document.getElementById('btn-calcular-ac');
   const powerDisplay = document.getElementById('potencia_ac_origen');
   const status = document.getElementById('estado-potencia-ac');
-  if (!powerEl || !distanceEl || !voltageEl || !out || !btn) return;
+  const out = document.getElementById('resultado-4');
+  const btn = document.getElementById('btn-calcular-ac');
+  if (!distanceEl || !voltageEl || !out || !btn) return;
 
-  const fmt = (number, decimals = 2) => number.toLocaleString('es-CO', {
+  const fmt = (number, decimals = 2) => Number(number).toLocaleString('es-CO', {
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals
   });
+
+  // Lee la potencia REGISTRADA en el paso 1.1 (estado de calculos.js),
+  // no el texto del campo, que puede estar escrito pero sin registrar.
+  function potenciaRegistrada() {
+    if (typeof estado === 'undefined' || !estado) return null;
+    const p = Number(estado.P_dispositivo);
+    return Number.isFinite(p) && p > 0 ? p : null;
+  }
+
   function showPowerSource() {
     const v = Number(voltageEl.value);
-    if (connectionEl) connectionEl.textContent = v <= 120 ? `${v} V · fase y neutro (L-N)` : `${v} V · dos líneas (L1-L2)`;
-    const power = Number(powerEl.value);
-    if (powerDisplay) powerDisplay.textContent = power > 0 && Number.isFinite(power)
-      ? `${fmt(power, 0)} W`
-      : 'Sin registrar';
-    if (status) status.textContent = power > 0 && Number.isFinite(power)
-      ? 'Se usa la potencia escrita en el Paso 1.1.'
-      : 'Registra la potencia en el Paso 1.1 para habilitar este cálculo.';
+    if (connectionEl) {
+      connectionEl.textContent = v === 380
+        ? '380 V · 3 fases'
+        : v <= 120 ? `${v} V · fase y neutro (L-N)` : `${v} V · dos líneas (L1-L2)`;
+    }
+    const p = potenciaRegistrada();
+    if (powerDisplay) powerDisplay.textContent = p ? `${fmt(p, 0)} W` : 'Sin registrar';
+    if (status) {
+      status.textContent = p
+        ? 'Se usa la potencia registrada en el Paso 1.1.'
+        : 'Registra la potencia en el Paso 1.1 con el botón «Registrar potencia».';
+    }
   }
+
   function markError(message) {
     out.className = 'resultado resultado-ac visible error';
     out.replaceChildren();
@@ -179,17 +180,18 @@
     p.textContent = message;
     out.appendChild(p);
   }
+
   function showResult(res) {
     const warnings = [
       res.overPrototypeLimit
-        ? `<p class="aviso-cable"><strong>Límite del prototipo:</strong> la corriente calculada (${fmt(res.currentA)} A) supera los 10 A previstos para el prototipo; no implica que sus componentes soporten esta carga.</p>`
+        ? `<p class="aviso-cable"><strong>Corriente superior a 10 A:</strong> la corriente calculada (${fmt(res.currentA)} A) supera el límite del prototipo; los componentes del caso deben soportarla.</p>`
         : '',
       res.outsidePrototypeVoltage
-        ? `<p class="aviso-cable"><strong>Tensión fuera del escenario original:</strong> ${res.voltageV} V es un escenario de dimensionamiento adicional. Comprueba que inversor, EVSE, vehículo, protecciones y red admitan esta tensión; no se debe conectar el prototipo de 110 V a otra tensión sin rediseño.</p>`
+        ? `<p class="aviso-cable"><strong>Tensión fuera del escenario de 110 V:</strong> ${res.voltageV} V corresponde a un caso de dimensionamiento adicional. Verifica inversor, EVSE, vehículo y protecciones para esta tensión.</p>`
         : ''
     ].join('');
+
     out.className = 'resultado resultado-ac visible';
-    // Solo se interpolan números de salida del cálculo y texto interno controlado por el código.
     out.innerHTML = `
       <div class="calibre-ac-principal">
         <span>Conductores ${res.wireNames} · recomendación preliminar</span>
@@ -197,7 +199,7 @@
         <span>${fmt(res.wire.sectionMm2)} mm² · cobre</span>
       </div>
       <div class="datos-cable-grid">
-        <div><small>Potencia de carga</small><strong>${fmt(res.powerW)} W</strong></div>
+        <div><small>Potencia de carga</small><strong>${fmt(res.powerW, 0)} W</strong></div>
         <div><small>Distancia de ida</small><strong>${fmt(res.distanceM)} m</strong></div>
         <div><small>Tensión y conexión</small><strong>${res.voltageV} V · ${res.connection}</strong></div>
         <div><small>Corriente de carga</small><strong>${fmt(res.currentA)} A</strong></div>
@@ -211,12 +213,23 @@
       </div>
       ${warnings}
       <p class="nota-ac"><strong>Supuestos aplicados:</strong> ${res.assumptions}</p>
-<strong>Cómo se obtuvo:</strong> ${res.formulaText}; I<sub>diseño</sub> = 1,25·I; S<sub>caída</sub> = ${res.sectionFormula}, con ρ = 0,021 Ω·mm²/m. Se selecciona el primer AWG que cumpla caída ≤ 3 % y ampacidad ≥ ${fmt(res.minimumCircuitAmpacityA)} A.      <p class="nota-ac"><strong>Verificación pendiente:</strong> el mínimo de 20 A corresponde a circuitos domiciliarios o similares para carga de VE según RETIE 2026, art. 3.17.7(b). No se incluyen correcciones de temperatura, agrupamiento, instalación o fabricante, ni dimensionamiento del conductor de protección (PE), del interruptor automático ni del diferencial. Para 220/240 V la configuración mostrada usa L1-L2, no fase-neutro; el PE sigue siendo obligatorio según corresponda. El calibre debe validarse con la NTC 2050, el RETIE aplicable, las terminales y la ficha del equipo.</p>
+      <p class="nota-ac"><strong>Cómo se obtuvo:</strong> ${res.formulaText}; I<sub>diseño</sub> = 1,25·I; S<sub>caída</sub> = ${res.sectionFormula}, con ρ = 0,021 Ω·mm²/m. Se selecciona el primer AWG que cumpla caída ≤ 3 % y ampacidad ≥ ${fmt(res.minimumCircuitAmpacityA)} A.</p>
+      <p class="nota-ac"><strong>Verificación pendiente:</strong> revisar NTC 2050 y RETIE aplicables, terminales, ficha del equipo, protección (MCB), diferencial y conductor de protección (PE). El mínimo de 20 A aplica a circuitos domiciliarios o similares según RETIE, art. 3.17.7(b).</p>
       <div class="acciones-cable"><button type="button" class="btn-copiar-ac" id="copiar-ac">Copiar resultados</button><span id="mensaje-copiar-ac" aria-live="polite"></span></div>
     `;
+
     const copy = document.getElementById('copiar-ac');
     copy.addEventListener('click', () => {
-      const summary = `Dimensionamiento conductor AC ${res.voltageV} V (preliminar)\nConexión: ${res.connection}\nPotencia: ${fmt(res.powerW)} W\nDistancia de ida: ${fmt(res.distanceM)} m\nCorriente: ${fmt(res.currentA)} A\nCorriente diseño: ${fmt(res.designCurrentA)} A\n${res.wireNames}: ${res.wire.awg} AWG Cu (${fmt(res.wire.sectionMm2)} mm²)\nCaída de tensión: ${fmt(res.voltageDropV)} V (${fmt(res.voltageDropPercent)} %)\nCriterio: ${res.controllingCriterion}\nSujeto a revisión de RETIE 2026/NTC 2050, condiciones de montaje y protecciones.`;
+      const summary = `Dimensionamiento conductor AC ${res.voltageV} V (preliminar)
+Conexión: ${res.connection}
+Potencia: ${fmt(res.powerW, 0)} W
+Distancia de ida: ${fmt(res.distanceM)} m
+Corriente: ${fmt(res.currentA)} A
+Corriente de diseño: ${fmt(res.designCurrentA)} A
+${res.wireNames}: ${res.wire.awg} AWG Cu (${fmt(res.wire.sectionMm2)} mm²)
+Caída de tensión: ${fmt(res.voltageDropV)} V (${fmt(res.voltageDropPercent)} %)
+Criterio: ${res.controllingCriterion}
+Sujeto a revisión de RETIE/NTC 2050, condiciones de montaje y protecciones.`;
       const msg = document.getElementById('mensaje-copiar-ac');
       if (!navigator.clipboard || !navigator.clipboard.writeText) {
         msg.textContent = 'La función de copiar requiere un navegador con acceso al portapapeles.';
@@ -227,26 +240,39 @@
         .catch(() => { msg.textContent = 'No se pudo copiar. Verifica los permisos del navegador.'; });
     });
   }
+
   function run() {
     showPowerSource();
+    const p = potenciaRegistrada();
+    if (!p) {
+      markError('Registra primero la potencia en el Paso 1.1 con el botón «Registrar potencia», y luego vuelve aquí.');
+      return;
+    }
     const d = distanceEl.value.trim();
-    if (d === '') return markError('Ingresa la distancia de ida entre el tablero/inversor y el EVSE.');
-    const p = powerEl.value.trim();
-    if (p === '') return markError('Ingresa primero la potencia del vehículo en el Paso 1.1.');
-    const res = calculateAcCable(Number(d), Number(p), Number(voltageEl.value), environmentEl.value === 'domiciliario');
-    if (!res.ok) return markError(res.error);
+    if (d === '') {
+      markError('Ingresa la distancia de ida entre el tablero o inversor y el punto de carga.');
+      return;
+    }
+    const res = calculateAcCable(Number(d), p, Number(voltageEl.value), environmentEl.value === 'domiciliario');
+    if (!res.ok) {
+      markError(res.error);
+      return;
+    }
     showResult(res);
   }
+
+  // Cada vez que se pulsa un botón de la página (por ejemplo "Registrar potencia"),
+  // se actualiza la potencia mostrada en la sección 4.
+  document.addEventListener('click', () => {
+    setTimeout(() => {
+      showPowerSource();
+      if (out.classList.contains('visible')) run();
+    }, 0);
+  }, true);
+
   btn.addEventListener('click', run);
-  environmentEl.addEventListener('change', () => { if (out.classList.contains('visible')) run(); });
-  powerEl.addEventListener('input', () => {
-    showPowerSource();
-    if (out.classList.contains('visible')) run();
-  });
-  voltageEl.addEventListener('change', () => {
-    showPowerSource();
-    if (out.classList.contains('visible')) run();
-  });
+  if (environmentEl) environmentEl.addEventListener('change', () => { if (out.classList.contains('visible')) run(); });
+  voltageEl.addEventListener('change', () => { showPowerSource(); if (out.classList.contains('visible')) run(); });
   distanceEl.addEventListener('input', () => {
     if (out.classList.contains('visible')) {
       if (distanceEl.value === '') {
@@ -255,14 +281,16 @@
       } else run();
     }
   });
+
   const resetButton = document.querySelector('.btn-reiniciar');
   if (resetButton) resetButton.addEventListener('click', () => {
     distanceEl.value = '';
     voltageEl.value = String(CONFIG.defaultVoltage);
-    environmentEl.value = 'domiciliario';
+    if (environmentEl) environmentEl.value = 'domiciliario';
     out.className = 'resultado resultado-ac';
     out.replaceChildren();
     showPowerSource();
   });
+
   showPowerSource();
 })(typeof globalThis === 'object' ? globalThis : this);
