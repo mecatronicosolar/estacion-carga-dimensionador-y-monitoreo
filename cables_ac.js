@@ -14,14 +14,13 @@
   'use strict';
   const CONFIG = Object.freeze({
     defaultVoltage: 110,
-    supportedVoltages: Object.freeze([110, 120, 220, 240]),
+    supportedVoltages: Object.freeze([110, 120, 220, 240, 380]),
     maxDropPercent: 3,
     copperResistivityOhmMm2PerM: 0.021,
     powerFactor: 1,
     minCircuitAmps: 20,
     continuousLoadFactor: 1.25,
     prototypeCurrentLimit: 10,
-    // Calibres AWG 60 °C Cu: valores nominales empleados como referencia.
     sizes: Object.freeze([
       { awg: '14', sectionMm2: 2.08, ampacityA: 15 },
       { awg: '12', sectionMm2: 3.31, ampacityA: 20 },
@@ -44,7 +43,7 @@
     const power = Number(powerW);
     const voltage = Number(voltageV);
     if (!CONFIG.supportedVoltages.includes(voltage)) {
-      return { ok: false, error: 'Selecciona una tensión admitida: 110, 120, 220 o 240 V.' };
+      return { ok: false, error: 'Selecciona una tensión admitida: 110, 120, 220, 240 o 380 V.' };
     }
     if (!Number.isFinite(distance) || distance <= 0) {
       return { ok: false, error: 'La distancia debe ser mayor que 0 m.' };
@@ -56,12 +55,19 @@
       return { ok: false, error: 'Los valores exceden el alcance de esta herramienta de dimensionamiento preliminar.' };
     }
 
-    const currentA = power / (voltage * CONFIG.powerFactor);
+    const trifasica = voltage === 380;
+
+    // Monofásico: I = P/V, ΔV = 2·ρ·L·I/A (ida y retorno)
+    // Trifásico:  I = P/(√3·V·FP), ΔV = √3·ρ·L·I/A (tres conductores equilibrados)
+    const k = trifasica ? Math.sqrt(3) : 2;
+    const currentA = trifasica
+      ? power / (Math.sqrt(3) * voltage * CONFIG.powerFactor)
+      : power / (voltage * CONFIG.powerFactor);
     const designCurrentA = currentA * CONFIG.continuousLoadFactor;
     const nominalCircuitA = Math.max(designCurrentA, residential ? CONFIG.minCircuitAmps : 0);
     const maxDropV = voltage * CONFIG.maxDropPercent / 100;
     const minimumSectionDropMm2 =
-      2 * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / maxDropV;
+      k * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / maxDropV;
 
     const byAmpacity = CONFIG.sizes.find(c => c.ampacityA >= nominalCircuitA);
     const byDrop = CONFIG.sizes.find(c => c.sectionMm2 >= minimumSectionDropMm2);
@@ -76,19 +82,36 @@
       };
     }
 
-    const dropV = 2 * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / cable.sectionMm2;
+    const dropV = k * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / cable.sectionMm2;
     const dropPercent = 100 * dropV / voltage;
     const mechanism = cable.awg === byAmpacity.awg && cable.awg === byDrop.awg
       ? 'Ampacidad y caída de tensión'
       : cable.awg === byAmpacity.awg ? 'Ampacidad' : 'Caída de tensión';
+
+    let connection, wireNames, formulaText, sectionFormula, assumptions;
+    if (trifasica) {
+      connection = '3 fases (380 V entre fases)';
+      wireNames = 'fases A, B y C';
+      formulaText = `I = P ÷ (√3 × ${voltage} V × FP)`;
+      sectionFormula = '√3·ρ·L·I ÷ ΔV_máx';
+      assumptions = `Circuito trifásico equilibrado, cobre; FP=1; distancia de ida (ΔV = √3·ρ·L·I/A); ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}. Neutro y conductor de protección (PE) no dimensionados.`;
+    } else {
+      connection = voltage <= 120 ? 'L-N (fase y neutro)' : 'L1-L2 (dos líneas)';
+      wireNames = voltage <= 120 ? 'fase y neutro' : 'L1 y L2';
+      formulaText = `I = P ÷ ${voltage} V`;
+      sectionFormula = '2·ρ·L·I ÷ ΔV_máx';
+      assumptions = `Circuito AC monofásico ${voltage <= 120 ? 'L-N' : 'L1-L2'}, cobre; FP=1; ida y retorno; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}.`;
+    }
 
     return {
       ok: true,
       distanceM: distance,
       powerW: power,
       voltageV: voltage,
-      connection: voltage <= 120 ? 'L-N (fase y neutro)' : 'L1-L2 (dos líneas)',
-      wireNames: voltage <= 120 ? 'fase y neutro' : 'L1 y L2',
+      connection,
+      wireNames,
+      formulaText,
+      sectionFormula,
       currentA,
       designCurrentA,
       minimumCircuitAmpacityA: nominalCircuitA,
@@ -102,10 +125,19 @@
       controllingCriterion: mechanism,
       overPrototypeLimit: currentA > CONFIG.prototypeCurrentLimit,
       outsidePrototypeVoltage: voltage !== CONFIG.defaultVoltage,
-      assumptions: `Circuito AC monofásico ${voltage <= 120 ? 'L-N' : 'L1-L2'}, cobre; FP=1; ida y retorno; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}.`
+      assumptions
     };
   }
 
+  root.calcularConductorAC = calculateAcCable;
+  root.calcularConductorAC110 = (distance, power) => calculateAcCable(distance, power, 110);
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { calculateAcCable, CONFIG };
+  }
+
+  // La parte de interfaz (document.getElementById, showResult, etc.) se mantiene igual,
+  // con el cambio del paso 3 de esta respuesta.
+})(typeof globalThis === 'object' ? globalThis : this);
   root.calcularConductorAC = calculateAcCable;
   // Compatibilidad con la interfaz de 110 V anterior.
   root.calcularConductorAC110 = (distance, power) => calculateAcCable(distance, power, 110);
