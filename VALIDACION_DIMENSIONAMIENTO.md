@@ -1,3 +1,5 @@
+> Documento histórico heredado. No constituye evidencia ejecutada de la revisión 2026-11-08. Las fórmulas y archivos citados pueden corresponder a otra versión; consultar RESULTADOS_PRUEBAS_WEB.md y el motor actual.
+
 # Validación del dimensionamiento — 13 de octubre de 2026
 
 Integración directa del HTML original; `calculos.js` recuperado del repositorio ramzz276/dimensionador-solar. Fórmulas solares conservadas. Corrección de interfaz: no regenerar tarjetas de paneles con valores idénticos al perder foco, evitando consumir el primer clic. CSS del dimensionador limitado a `.solar-sizing` para mantener intacta la navegación.

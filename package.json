@@ -1,0 +1,12 @@
+{
+  "name": "estacion-carga-validacion",
+  "private": true,
+  "version": "2026.11.8",
+  "description": "Pruebas de la web estática. Ninguna dependencia de producción.",
+  "scripts": {
+    "test": "node --test tests/unit.cjs tests/static.cjs tests/extremos-dimensionamiento.cjs",
+    "test:browser": "node tests/browser.cjs && node tests/boundaries.cjs"
+  },
+  "devDependencies": { "playwright": "1.62.1" },
+  "engines": { "node": ">=20" }
+}
