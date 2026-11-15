@@ -27,3 +27,22 @@ body.sizing-page{margin:0;padding:0;overflow:auto}.solar-sizing{max-width:1320px
 .cad-context{color:#566c77;line-height:1.65;margin:0 0 28px}.cad-specs{display:grid;grid-template-columns:1fr 1.5fr;gap:12px;margin:24px 0;font-size:14px;line-height:1.5}.cad-specs dt{color:#566c77}.cad-specs dd{margin:0;font-weight:600}.cad-review{background:#fff5df;border-left:4px solid #b47612;padding:14px;border-radius:6px}.cad-method{margin-top:28px;padding:24px;background:#edf4f1;border-radius:16px;line-height:1.7}.cad-method summary{cursor:pointer;font-weight:700}.cad-method p{margin-top:14px}
 
 .cad-budget small{display:block;color:#566c77;line-height:1.5}.cad-budget .cad-specs{margin:12px 0}.cad-cost{flex-wrap:wrap}
+
+/* Selector de diseños precargados y acción de limpieza */
+.solar-sizing .presets-toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:18px;margin:18px 0;padding:20px 24px;border:1px solid #dce6e8;border-radius:14px;background:#fff}
+.solar-sizing .presets-picker{display:flex;flex-direction:column;gap:8px;flex:1 1 260px;max-width:520px}
+.solar-sizing .presets-picker label{font-size:13px;font-weight:700;color:#173940}
+.solar-sizing .presets-picker select{min-height:42px;padding:10px 14px;border:1px solid #bccbd1;border-radius:8px;background:#fff;color:#173940;font:inherit;font-size:13px;width:100%}
+.solar-sizing .presets-picker p{font-size:11px;color:#637781;margin:0}
+.solar-sizing .btn-borrar-todo{border:1px solid #c8d2d7;border-radius:8px;background:#f7f9fa;color:#173940;padding:12px 20px;font-weight:700;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap}
+.solar-sizing .btn-borrar-todo:hover{background:#eaf0f1}
+.solar-sizing .btn-borrar-todo:focus-visible,.solar-sizing .presets-picker select:focus-visible{outline:3px solid #087e68;outline-offset:2px}
+.solar-sizing .resumen-diseno{padding:22px 24px;margin-bottom:20px;border:1px solid #bbdacf;border-left:4px solid #128267;border-radius:12px;background:#f4faf7;color:#294650}
+.solar-sizing .resumen-diseno[hidden]{display:none}
+.solar-sizing .resumen-diseno h2{font-size:19px;margin:0 0 10px;color:#173940;line-height:1.3}
+.solar-sizing .resumen-diseno p{font-size:12px;line-height:1.6;margin:10px 0}
+.solar-sizing .resumen-referencia{display:grid;grid-template-columns:minmax(100px,.8fr) minmax(0,1.4fr);gap:8px 14px;margin:16px 0;font-size:12px;line-height:1.5}
+.solar-sizing .resumen-referencia dt{color:#526b73}
+.solar-sizing .resumen-referencia dd{font-weight:650;margin:0;overflow-wrap:anywhere}
+.solar-sizing .nota-paneles{color:#536e75}
+@media(max-width:640px){.solar-sizing .presets-toolbar{padding:16px;align-items:stretch}.solar-sizing .btn-borrar-todo{width:100%}.solar-sizing .resumen-diseno{padding:17px}.solar-sizing .resumen-diseno h2{font-size:16px}.solar-sizing .resumen-referencia{grid-template-columns:minmax(85px,.7fr) minmax(0,1.3fr);gap:8px;font-size:11px}}

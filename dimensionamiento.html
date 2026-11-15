@@ -22,6 +22,22 @@
 <div class="sizing-intro"><div><h2>De la demanda al sistema.</h2><p>Completa las etapas en orden. La energía, la batería, los paneles, el inversor y los conductores comparten los mismos datos. Si editas un dato, se borran los resultados que dependen de él.</p></div><a class="model-label" href="index.html#disenos">Ver diseños de referencia</a></div><nav class="guia-recorrido" aria-label="Etapas del dimensionador"><a href="#seccion-config"><span>00</span> Configuración</a><a href="#seccion-baterias"><span>01</span> Baterías</a><a href="#seccion-paneles"><span>02</span> FV y MPPT</a><a href="#seccion-inversor"><span>03</span> Inversor</a><a href="#seccion-conductores"><span>04</span> Conductores AC</a><a href="#seccion-dc"><span>05</span> Conductores DC</a></nav><details class="sizing-scope"><summary>Alcance y criterios de uso</summary><p>Estima una estación solar con almacenamiento y respaldo de red. El perfil de cálculo determina prioridades y opciones de alimentación; no clasifica el modo IEC. Los resultados son preliminares y requieren fichas comerciales y condiciones de instalación. No acreditan conformidad eléctrica ni validación física.</p></details>
     </section>
 
+    <div class="presets-toolbar" aria-label="Diseños de referencia y reinicio">
+      <div class="presets-picker">
+        <label for="selector-diseno">Cargar un diseño de referencia</label>
+        <select id="selector-diseno" aria-describedby="ayuda-diseno">
+          <option value="">Elegir una estación…</option>
+          <option value="800w">800 W · Movilidad ligera</option>
+          <option value="3-7kw">3,7 kW · Vehículo eléctrico</option>
+          <option value="7kw">7 kW · Carga residencial</option>
+          <option value="11kw">11 kW · Trifásica</option>
+        </select>
+        <p id="ayuda-diseno">Puedes cambiar los valores después de cargarlos.</p>
+      </div>
+      <button id="borrar-todo-superior" type="button" class="btn-borrar-todo">Borrar todo</button>
+    </div>
+    <div id="resumen-diseno" class="resumen-diseno" role="status" aria-live="polite" hidden></div>
+
     <p id="error-dimensionador" class="error-general" role="alert" tabindex="-1" hidden></p>
 
     <!-- PASO 0 -->
@@ -118,8 +134,10 @@
             <select id="V_sistema" required>
                 <option value="">-- Selecciona --</option>
                 <option value="12">12 V</option>
+                <option value="12.8">12,8 V (batería LFP)</option>
                 <option value="24">24 V</option>
                 <option value="48">48 V</option>
+                <option value="51.2">51,2 V (batería LFP)</option>
                 <option value="96">96 V</option>
             </select>
 
@@ -321,7 +339,7 @@
     </section>
 
     <footer class="pie">
-        <button class="btn-reiniciar" onclick="reiniciarApp()">Reiniciar cálculos</button>
+        <button class="btn-reiniciar" type="button" onclick="borrarTodoDimensionador()">Borrar todo</button>
         <p class="nota">Dimensionador Solar · Versión con respaldo de red</p>
     </footer>
 </div>
@@ -332,5 +350,6 @@
 <script src="ayuda_dimensionador.js"></script>
 <script src="mejoras.js?v=20261108-num2"></script>
 <script src="app.js"></script>
+<script src="plantillas-estaciones.js?v=20261115-a"></script>
 </body>
 </html>
