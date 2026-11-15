@@ -1,0 +1,56 @@
+/* El recorrido y los cálculos provienen del ZIP sencillo del usuario.
+   Esta capa únicamente adapta su presentación a Estación Solar. */
+.solar-sizing{padding:28px 20px 50px}
+.solar-sizing .contenedor-principal{max-width:1000px;box-shadow:none;border:1px solid #e0e7eb;border-radius:16px}
+.solar-sizing .encabezado{background:#122f3a;padding:34px 30px;text-align:left}
+.solar-sizing .encabezado h1{color:#fff;font-size:clamp(27px,3vw,38px);letter-spacing:-.035em}
+.solar-sizing .encabezado .subtitulo{color:#e5f0ef;opacity:.9;font-size:14px;margin:0}
+.solar-sizing .seccion{padding:28px 30px;border-color:#ecf0f2}
+.solar-sizing .seccion h2{color:#175f50;border-left-color:#197967;font-size:23px;letter-spacing:-.02em}
+.solar-sizing .introduccion-simple{background:#edf5f1;border-left:0;padding:21px 30px}
+.solar-sizing .introduccion-simple p{color:#385d55;line-height:1.6;font-size:13px}
+.solar-sizing .guia-recorrido{margin:14px 0 0;gap:9px}
+.solar-sizing .guia-recorrido a{border-color:#cadbd2;font-size:12px;min-height:42px}
+.solar-sizing .guia-inicio{background:#f7faf8;border-left:0}
+.solar-sizing .guia-inicio>summary{font-weight:700;color:#176b58;cursor:pointer}
+.solar-sizing .guia-inicio[open]>summary{margin-bottom:12px}
+.solar-sizing .guia-inicio .datos-previos{grid-template-columns:1fr 1fr}
+.solar-sizing .paso{border-left-color:#75a99c;background:#f8faf9;border-radius:10px;padding:20px}
+.solar-sizing .paso h3{color:#174739;font-weight:650}
+.solar-sizing .paso input:focus,.solar-sizing .paso select:focus{border-color:#197967;background:#f1f8f4}
+.solar-sizing .btn-calcular{background:#197967;font-weight:650;transition:background .15s;width:auto;min-width:205px;max-width:100%}
+.solar-sizing .btn-calcular:hover{background:#115f50;transform:none;box-shadow:none}
+.solar-sizing .enlace-externo,.solar-sizing .btn-copiar-ac{background:#197967}
+.solar-sizing .enlace-externo:hover,.solar-sizing .btn-copiar-ac:hover{background:#115f50}
+.solar-sizing .descripcion-seccion{background:#edf5f1;border-left-color:#70a98e;padding:13px 16px}
+.solar-sizing .descripcion-seccion p,.solar-sizing .descripcion-seccion strong{color:#345e51}
+.solar-sizing .paso .subtitulo-paso{font-style:normal}
+.solar-sizing .presets-toolbar{display:flex;gap:20px;align-items:end;justify-content:space-between;flex-wrap:wrap;padding:20px 30px;background:#fff;margin:0;border:0;border-bottom:1px solid #e0e7eb;border-radius:0}
+.solar-sizing .presets-picker{flex:1 1 320px;max-width:550px}
+.solar-sizing .presets-picker p{font-size:11px;color:#687e79;margin:4px 0 0}
+.solar-sizing .btn-borrar-todo,.solar-sizing .btn-reiniciar{border:1px solid #c7d6d0;border-radius:8px;background:#fff;color:#145947;padding:11px 17px;font-weight:650;font-size:13px;cursor:pointer;min-height:44px}
+.solar-sizing .btn-borrar-todo:hover,.solar-sizing .btn-reiniciar:hover{background:#edf5f1}
+.solar-sizing .resumen-diseno{margin:0;padding:20px 30px;border:0;border-bottom:1px solid #dae9e1;background:#f7faf8;border-radius:0}
+.solar-sizing .resumen-diseno h2{border:0;padding:0;color:#176b58;font-size:17px;margin:0 0 6px}
+.solar-sizing .resumen-diseno p{font-size:12px;color:#4e665f;line-height:1.65}
+.solar-sizing .resumen-referencia{display:grid;grid-template-columns:minmax(140px,.7fr) minmax(0,1.3fr);gap:8px 16px;margin:16px 0;font-size:12px}
+.solar-sizing .resumen-referencia dt{color:#536c64}
+.solar-sizing .resumen-referencia dd{font-weight:650;color:#153d32;margin:0;overflow-wrap:anywhere}
+.solar-sizing .nota-plantilla{font-weight:500}
+.solar-sizing .aviso-trifasico{margin:0 0 22px;padding:16px;border-left:4px solid #c28a26;background:#fff6e1;color:#684e1c;border-radius:7px;font-size:13px;line-height:1.6}
+.solar-sizing .pie{padding:28px 18px}
+.solar-sizing .pie .nota{color:#698078;font-size:12px;margin:12px 0 0}
+.solar-sizing .btn-calcular:disabled{background:#c8d5d0;color:#4b655a;cursor:not-allowed}
+@media(max-width:640px){
+ .solar-sizing{padding:12px 8px 24px}
+ .solar-sizing .contenedor-principal{border-radius:10px}
+ .solar-sizing .encabezado{padding:24px 18px}
+ .solar-sizing .seccion{padding:20px 18px}
+ .solar-sizing .introduccion-simple{padding:18px}
+ .solar-sizing .guia-inicio .datos-previos{grid-template-columns:1fr}
+ .solar-sizing .presets-toolbar{padding:18px;align-items:stretch}
+ .solar-sizing .btn-borrar-todo{width:100%}
+ .solar-sizing .resumen-diseno{padding:18px}
+ .solar-sizing .resumen-referencia{grid-template-columns:minmax(80px,.7fr) minmax(0,1.3fr);font-size:11px}
+ .solar-sizing .btn-calcular{width:100%}
+}
