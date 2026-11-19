@@ -88,7 +88,7 @@ Abre [http://localhost:8000](http://localhost:8000). Para consultar el dashboard
 | [cables-ac-simple.js](cables-ac-simple.js) | Estimación de conductores AC monofásicos. |
 | [plantillas-simple.js](plantillas-simple.js) | Precarga de datos de las cuatro estaciones. |
 | [ayuda-simple.js](ayuda-simple.js) | Ayudas de uso del dimensionador. |
-| [dimensionamiento-detallado.html](dimensionamiento-detallado.html) | Versión detallada conservada como alternativa. |
+| [dimensionamiento-detallado.html](dimensionamiento-detallado.html) | Redirección de compatibilidad hacia el dimensionador actual. |
 | [monitoreo.html](monitoreo.html) y [monitoreo.js](monitoreo.js) | Vista externa de ThingsBoard y estado de carga del marco. |
 
 ## Publicación
@@ -100,7 +100,8 @@ La plataforma se publica mediante **GitHub Pages** desde la rama `main`, carpeta
 - [Diseños mecánicos y ensamblajes CAD](https://github.com/mecatronicosolar/estacion-carga-solar-diseno-mecanico).
 - [Diseño electrónico y documentación](https://github.com/mecatronicosolar/estacion-carga-solar-electronica).
 - [Fichas técnicas de componentes](https://github.com/mecatronicosolar/estacion-carga-solar-datasheets).
-- [Registro de actualización del dimensionador](ACTUALIZACION_2026_11_15.md).
-- [Registro histórico de validación](VALIDACION_DIMENSIONAMIENTO.md).
+- [Registro de unificación](Documentaci%C3%B3n/ACTUALIZACION_UNIFICACION.md).
+- [Registro de actualización del dimensionador](Documentaci%C3%B3n/ACTUALIZACION_2026_11_15.md).
+- [Registro histórico de validación](Documentaci%C3%B3n/VALIDACION_DIMENSIONAMIENTO.md).
 
 Los registros de actualización y validación corresponden a revisiones concretas; deben interpretarse junto con el código de la versión consultada.

@@ -1,4 +1,4 @@
-// Validación de campos al salir del campo (blur). Los cálculos están en calculos.js.
+// Validación de campos al salir del campo (blur). Los cálculos están en calculos-simple.js.
 (() => {
   'use strict';
   const reglas = {

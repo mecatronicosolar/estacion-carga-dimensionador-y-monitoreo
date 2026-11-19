@@ -1,5 +1,5 @@
 /*
- * Dimensionador Solar - Secciones 1, 2 y 3. La Sección 4 está en cables_ac.js.
+ * Dimensionador Solar - Secciones 1, 2 y 3. La Sección 4 está en cables-ac-simple.js.
  * Los pasos se calculan con sus botones, en orden. Si cambias un dato, se invalidan los pasos posteriores.
  */
 (function () {
@@ -31,7 +31,7 @@
     opciones: [], seleccion: null
   };
 
-  // estilos.css oculta .resultado salvo que tenga la clase "visible".
+  // estilos-simple.css oculta .resultado salvo que tenga la clase "visible".
   // Las variantes de color son "error" y "warning".
   function mostrar(el, html, clase) {
     if (!el) return;
