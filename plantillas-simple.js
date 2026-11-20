@@ -8,42 +8,96 @@
   if (!selector) return;
 
   const plantillas = Object.freeze({
-    '800w': {
-      titulo: '800 W · Movilidad ligera',
-      potencia: 800, tiempo: 1, vehiculos: 1,
-      tipoBateria: 'litio', modoBateria: 'voltaje_capacidad',
-      voltajeBateria: 12.8, capacidadBateria: 200,
-      potenciaPanel: 550, voltajeSalida: '110', tensionAC: '110',
-      componentes: ['1 × Suntech de 550 Wp', 'Victron SuperPack NG · 12,8 V / 200 Ah', 'BELTTT BEP1000S · 1.000 W · 110 V', 'Victron SmartSolar 100/50'],
-      costo: '$6.595.442 COP'
-    },
-    '3-7kw': {
-      titulo: '3,7 kW · Vehículo eléctrico',
-      potencia: 3700, tiempo: 1, vehiculos: 1,
-      tipoBateria: 'litio', modoBateria: 'voltaje_capacidad',
-      voltajeBateria: 51.2, capacidadBateria: 200,
-      potenciaPanel: 620, voltajeSalida: '220', tensionAC: '220',
-      componentes: ['6 × JA Solar de 620 Wp', 'MUST LP16-48200 · 51,2 V / 200 Ah', 'MUST PV33-4048 TLV · 4 kW', 'Victron SmartSolar 150/100'],
-      costo: '$22.353.941 COP'
-    },
-    '7kw': {
-      titulo: '7 kW · Carga residencial',
-      potencia: 7000, tiempo: 1, vehiculos: 1,
-      tipoBateria: 'litio', modoBateria: 'voltaje_capacidad',
-      voltajeBateria: 51.2, capacidadBateria: 300,
-      potenciaPanel: 710, voltajeSalida: '220', tensionAC: '220',
-      componentes: ['Tensite de 710 Wp', 'MUST LP16-48300 · 51,2 V / 300 Ah', 'MUST PV36-8048 TLV · 8 kW', 'Victron SmartSolar 150/35'],
-      costo: '$25.523.604 COP'
-    },
-    '11kw': {
-      titulo: '11 kW · Carga trifásica',
-      potencia: 11000, tiempo: 1, vehiculos: 1,
-      tipoBateria: 'litio', modoBateria: 'energia', energiaBateria: 16000,
-      potenciaPanel: 710, voltajeSalida: '', tensionAC: '', trifasico: true,
-      componentes: ['Tensite de 710 Wp', '2 × Deye SE-F16 · 16 kWh por módulo', 'Deye SUN-16K-SG05LP3-EU-SM2 · 16 kW', 'MPPT integrado'],
-      costo: '$38.767.038 COP'
-    }
-  });
+  "800w": {
+    "titulo": "800 W · Movilidad ligera",
+    "potencia": 800,
+    "tiempo": 1,
+    "vehiculos": 1,
+    "tipoBateria": "litio",
+    "modoBateria": "energia",
+    "energiaBateria": 2560,
+    "potenciaPanel": 550,
+    "voltajeSalida": "110",
+    "tensionAC": "110",
+    "componentes": [
+      "1 × Suntech de 550 Wp",
+      "Felicity FLA24100 · 24 V / 100 Ah · 2,56 kWh",
+      "BELTTT · 1.000 W / 24 V DC",
+      "SRNE ML2440 · 24 V / 40 A"
+    ],
+    "costo": "$6.595.442 COP",
+    "nota": "Configuración de litio de Costos 800W: banco de 24 V e inversor de 24 V. No corresponde al conjunto Victron de 12 V de Revision final.",
+    "fuente": "Costos 800W",
+    "cantidadBaterias": 1
+  },
+  "3-7kw": {
+    "titulo": "3,7 kW · Vehículo eléctrico",
+    "potencia": 3700,
+    "tiempo": 1,
+    "vehiculos": 1,
+    "tipoBateria": "litio",
+    "modoBateria": "energia",
+    "energiaBateria": 8750,
+    "potenciaPanel": 620,
+    "voltajeSalida": "",
+    "tensionAC": "",
+    "componentes": [
+      "6 × JA Solar de 620 Wp",
+      "Felicity FLA48171-EU · 48 V nominales · 8,75 kWh",
+      "MUST PV33-4048 TLV · 4 kW / 48 V DC",
+      "MPPT integrado · sin controlador externo presupuestado"
+    ],
+    "costo": "$17.301.251 COP",
+    "nota": "La tabla de litio indica 110 V y la tabla GEL 220 V. Confirma la tensión de salida y la revisión del inversor; la precarga deja esa tensión sin seleccionar.",
+    "fuente": "Costos 3.7kW",
+    "cantidadBaterias": 1
+  },
+  "7kw": {
+    "titulo": "7 kW · Carga residencial",
+    "potencia": 7000,
+    "tiempo": 1,
+    "vehiculos": 1,
+    "tipoBateria": "litio",
+    "modoBateria": "energia",
+    "energiaBateria": 8750,
+    "potenciaPanel": 710,
+    "voltajeSalida": "220",
+    "tensionAC": "220",
+    "componentes": [
+      "4 × Tensite de 710 Wp",
+      "2 × Felicity FLA48171-EU · 8,75 kWh por módulo",
+      "MUST PV36-8048 TLV · 8 kW / 48 V DC",
+      "MPPT integrado · sin controlador externo presupuestado"
+    ],
+    "costo": "$25.523.604 COP",
+    "nota": "La alternativa de litio usa cuatro paneles y dos módulos Felicity. No se aplican las autonomías ni la fracción solar de Revision final.",
+    "fuente": "Costos 7kW",
+    "cantidadBaterias": 2
+  },
+  "11kw": {
+    "titulo": "11 kW · Carga trifásica",
+    "potencia": 11000,
+    "tiempo": 1,
+    "vehiculos": 1,
+    "tipoBateria": "litio",
+    "modoBateria": "energia",
+    "energiaBateria": 11800,
+    "potenciaPanel": 710,
+    "voltajeSalida": "",
+    "tensionAC": "",
+    "componentes": [
+      "6 × Tensite de 710 Wp",
+      "2 × Felicity FLA48230-EU · 11,8 kWh por módulo",
+      "Deye híbrido trifásico · 12 kW · 127/220 V según enlace",
+      "MPPT integrado · sin controlador externo presupuestado"
+    ],
+    "costo": "$38.767.038 COP",
+    "nota": "Configuración presupuestada a 220 V trifásicos. Confirma la referencia exacta del Deye y la compatibilidad del cargador; no equivale a la revisión de 380 V.",
+    "fuente": "Costos 11kW",
+    "cantidadBaterias": 2,
+    "trifasico": true
+  }
+});
 
   const controlIds = ['P_dispositivo','t_sesion','num_dispositivos','tipo_bateria',
     'V_bat','C_ah','Ebat_wh','HSP','P_panel','V_nominal',
@@ -90,12 +144,12 @@
     const titulo=document.createElement('h2');titulo.textContent=`Diseño cargado: ${t.titulo}`;
     const intro=document.createElement('p');intro.textContent='Datos conocidos precargados. Puedes editarlos y calcular cada paso. Las HSP, la distancia del cable y el voltaje nominal del panel dependen de la instalación o su ficha técnica.';
     const tabla=document.createElement('dl');tabla.className='resumen-referencia';
-    const datos=[['Paneles de referencia',t.componentes[0]], ['Batería de referencia',t.componentes[1]], ['Inversor de referencia',t.componentes[2]],['Controlador',t.componentes[3]], ['Costo estimado',t.costo]];
+    const datos=[['Paneles de referencia',t.componentes[0]], ['Batería de referencia',t.componentes[1]], ['Inversor de referencia',t.componentes[2]],['Controlador',t.componentes[3]], ['Costo estimado',t.costo], ['Baterías presupuestadas',String(t.cantidadBaterias)], ['Fuente',t.fuente]];
     for (const [k,v] of datos) {const dt=document.createElement('dt');dt.textContent=k; const dd=document.createElement('dd');dd.textContent=v;tabla.append(dt,dd);}
     const nota=document.createElement('p');nota.className='nota-plantilla';
-    nota.textContent=t.trifasico
-      ? 'El diseño es trifásico (380 V). El dimensionamiento de cables AC e inversor trifásico queda fuera del alcance de la calculadora sencilla del ZIP. El número calculado de baterías puede diferir del presupuesto del proyecto.'
-      : 'El número de paneles y baterías calculado puede diferir del diseño de referencia según las HSP, la duración de carga y los supuestos del dimensionador.';
+    nota.textContent=t.nota + ' ' + (t.trifasico
+      ? 'El diseño es trifásico (220 V, según Costos). El dimensionamiento de cables AC e inversor trifásico queda fuera del alcance de la calculadora sencilla del ZIP. El número calculado de baterías puede diferir del presupuesto del proyecto.'
+      : 'El número de paneles y baterías calculado puede diferir del diseño de referencia según las HSP, la duración de carga y los supuestos del dimensionador.');
     el.append(titulo,intro,tabla,nota); el.hidden=false;
   }
 

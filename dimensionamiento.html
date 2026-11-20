@@ -5,9 +5,9 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Dimensionador Solar</title>
-<link href="estilos-simple.css?v=20261115-simple" rel="stylesheet"/>
+<link href="estilos-simple.css?v=20261119-costos" rel="stylesheet"/>
 <link href="styles.css" rel="stylesheet"/>
-<link href="sencillo.css?v=20261115-simple" rel="stylesheet"/>
+<link href="sencillo.css?v=20261119-costos" rel="stylesheet"/>
 </head>
 <body class="sizing-page">
 <header class="site-header"><a aria-label="Estación Solar, inicio" class="brand" href="index.html"><span class="brand-mark"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"></path></svg></span><span>Estación Solar<small>INGENIERÍA MECATRÓNICA</small></span></a><button aria-controls="main-nav" aria-expanded="false" class="menu-button">Menú <span aria-hidden="true">☰</span></button><nav aria-label="Navegación principal" class="nav" id="main-nav"><a href="index.html"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3Z"></path><path d="M9 20v-7h6v7"></path></svg><span>Inicio</span></a><a class="active" href="dimensionamiento.html"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><rect height="20" rx="2" width="14" x="5" y="2"></rect><path d="M8 6h8M8 11h2m4 0h2m-8 4h2m4 0h2m-8 4h2m4 0h2"></path></svg><span>Dimensionamiento</span></a><a href="monitoreo.html"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" viewbox="0 0 24 24"><path d="M3 3v18h18M6 15l4-5 4 3 6-8"></path></svg><span>Monitoreo</span></a></nav><span class="header-tag">Proyecto de grado</span></header>
@@ -195,7 +195,7 @@
 </section>
 <!-- SECCIÓN 3: DIMENSIONAMIENTO DEL INVERSOR -->
 <section class="seccion" id="seccion-inversor">
-<h2>3. Dimensionamiento del inversor</h2><p class="aviso-trifasico" hidden="" id="aviso-inversor-trifasico" role="status">El inversor del diseño de 11 kW es trifásico. Esta calculadora sencilla solo ofrece salida de 110/120 V o 220/240 V: no verifica ese equipo de 380 V.</p>
+<h2>3. Dimensionamiento del inversor</h2><p class="aviso-trifasico" hidden="" id="aviso-inversor-trifasico" role="status">El inversor del diseño de 11 kW es trifásico. Esta calculadora sencilla solo ofrece salida de 110/120 V o 220/240 V: no verifica ese equipo trifásico de 220 V.</p>
 <div class="descripcion-seccion">
 <p>
 <strong>¿Por qué esta sección?</strong> El inversor convierte la energía DC de los paneles
@@ -223,7 +223,7 @@
 </div>
 </section>
 <section class="seccion" id="seccion-conductores">
-<h2>4. Dimensionamiento de conductores eléctricos AC</h2><p class="aviso-trifasico" hidden="" id="aviso-trifasico" role="status">El diseño de 11 kW es trifásico (380 V). Este módulo del ZIP solo calcula conductores monofásicos de 110–240 V, por lo que no dimensiona los conductores de esa estación. Se necesita un cálculo trifásico específico.</p>
+<h2>4. Dimensionamiento de conductores eléctricos AC</h2><p class="aviso-trifasico" hidden="" id="aviso-trifasico" role="status">El diseño de 11 kW es trifásico (220 V, según la hoja Costos). Este módulo del ZIP solo calcula conductores monofásicos de 110–240 V, por lo que no dimensiona los conductores de esa estación. Se necesita un cálculo trifásico específico.</p>
 <div class="descripcion-seccion"><p>Usa la potencia escrita en el paso 1.1 para estimar los conductores de un solo punto de carga. Completa la tensión, la distancia de ida y el entorno antes de calcular.</p><p>La potencia debe ser mayor que 0 y de hasta 50000 W para esta sección. Se selecciona cobre por ampacidad y caída de tensión objetivo ≤ 3 %.</p></div>
 <div class="paso paso-cables-ac">
 <div class="info-origen-ac"><div><small>Potencia del paso 1.1</small><strong id="potencia_ac_origen">Sin registrar</strong></div><div><small>Conexión asumida</small><strong id="configuracion_ac"></strong></div></div>
@@ -256,10 +256,10 @@
 <footer class="pie"><button class="btn-reiniciar" id="borrar-todo-inferior" type="button">Borrar todo</button><p class="nota">Cálculo preliminar para comparar escenarios, sujeto a validación técnica.</p></footer>
 </div>
 </main>
-<script src="calculos-simple.js?v=20261115-simple"></script>
-<script src="cables-ac-simple.js?v=20261115-simple"></script>
-<script src="ayuda-simple.js?v=20261115-simple"></script>
+<script src="calculos-simple.js?v=20261119-costos"></script>
+<script src="cables-ac-simple.js?v=20261119-costos"></script>
+<script src="ayuda-simple.js?v=20261119-costos"></script>
 <script src="app.js"></script>
-<script src="plantillas-simple.js?v=20261115-simple"></script>
+<script src="plantillas-simple.js?v=20261119-costos"></script>
 </body>
 </html>

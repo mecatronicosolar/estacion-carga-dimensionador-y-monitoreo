@@ -56,7 +56,7 @@ Esta es la energía de consumo del escenario; la selección de equipos debe cons
 
 La herramienta sirve para **dimensionamiento preliminar y comparación de escenarios**. La versión guiada usa supuestos simplificados: profundidad de descarga de 0,5 para plomo y 0,8 para litio, y factor 1,25 para la estimación de generación fotovoltaica. No contempla de forma completa eficiencias, envejecimiento, reservas ni todas las restricciones de los equipos.
 
-El módulo AC admite **110, 120, 220 y 240 V monofásicos**. No dimensiona el circuito **trifásico de 380 V de la estación de 11 kW**. Tampoco calcula el conductor de protección ni selecciona el interruptor o diferencial.
+El módulo AC admite **110, 120, 220 y 240 V monofásicos**. No dimensiona el circuito **trifásico de 220 V de la estación de 11 kW**. Tampoco calcula el conductor de protección ni selecciona el interruptor o diferencial.
 
 Antes de definir una instalación deben verificarse las fichas de los equipos, las condiciones reales del sitio, las protecciones y el diseño eléctrico completo. Los presupuestos mostrados son referencias del proyecto, no cotizaciones actualizadas.
 
@@ -105,3 +105,7 @@ La plataforma se publica mediante **GitHub Pages** desde la rama `main`, carpeta
 - [Registro histórico de validación](Documentaci%C3%B3n/VALIDACION_DIMENSIONAMIENTO.md).
 
 Los registros de actualización y validación corresponden a revisiones concretas; deben interpretarse junto con el código de la versión consultada.
+
+## Fuente de las fichas
+
+Las referencias, enlaces y presupuestos de las cuatro estaciones corresponden a la **alternativa de litio de las hojas Costos** del Excel aportado por el equipo. No se mezclan con la hoja Revision final. En 3,7 kW el archivo contiene una discrepancia entre 110 V y 220 V: la tensión se deja sin precargar. Las energías nominales de batería no equivalen a respaldo útil.
