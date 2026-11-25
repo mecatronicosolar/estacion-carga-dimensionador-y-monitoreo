@@ -26,7 +26,7 @@ Los archivos mecánicos completos están en el [repositorio de diseños CAD](htt
 - **Estimar baterías:** ingresar potencia por vehículo, duración de la sesión, cantidad de vehículos simultáneos y datos de la batería.
 - **Estimar paneles:** introducir las horas solares pico (HSP), la potencia del módulo y su categoría de tensión nominal.
 - **Consultar el inversor:** obtener especificaciones preliminares según el escenario y la tensión de salida seleccionada.
-- **Estimar conductores AC:** evaluar un circuito monofásico de cobre según potencia, tensión, distancia de ida y entorno de instalación.
+- **Estimar conductores AC:** evaluar un circuito de cobre según potencia y la tensión de salida del inversor, con distancia de ida (se recomienda hasta 7,5 m según NTC 2050, art. 625.17) y un mínimo de 20 A para el circuito independiente.
 - **Consultar monitoreo:** abrir el dashboard externo de ThingsBoard desde la plataforma o en otra pestaña.
 
 ## Cómo usar el dimensionador
@@ -35,7 +35,7 @@ Los archivos mecánicos completos están en el [repositorio de diseños CAD](htt
 2. Completa **Baterías**, pulsando los botones de cada paso en orden. Ingresa potencia en W, duración en horas y vehículos como número entero.
 3. En **Paneles**, registra las HSP de la ubicación y los datos del módulo; después revisa las opciones de arreglo.
 4. En **Inversor**, selecciona la tensión de salida para consultar la especificación propuesta.
-5. En **Conductores AC**, indica tensión, distancia de ida y entorno. La herramienta incluye el recorrido de retorno.
+5. En **Conductores AC**, indica solo la distancia de ida (se recomienda hasta 7,5 m; si la supera, el cálculo sigue disponible). La tensión se toma de la salida elegida en el inversor, y en monofásico la herramienta incluye el recorrido de retorno.
 6. Usa **Borrar todo** para empezar otro escenario.
 
 Ten a mano las fichas del cargador, la batería y el panel, además de las condiciones del lugar. Los ejemplos precargados no sustituyen esos datos.
