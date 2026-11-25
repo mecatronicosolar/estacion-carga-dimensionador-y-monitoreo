@@ -32,7 +32,7 @@
 <div><dt>Tiempo y cantidad de vehículos</dt><dd>Define cuánto durará una sesión y cuántos vehículos cargarán a la vez. El cálculo supone la misma potencia y duración para todos. Por ejemplo: <strong>1 hora y 30 minutos = 1.5 h</strong>.</dd></div>
 <div><dt>Recurso solar del lugar</dt><dd>Consulta las horas solares pico (HSP) para la ubicación de la estación. En el paso 2.1 encontrarás una explicación y un enlace de consulta. Las HSP son distintas de las horas entre el amanecer y el atardecer.</dd></div>
 <div><dt>Ficha del panel solar</dt><dd>Necesitarás su potencia nominal en W y la categoría de tensión nominal que corresponda: 12, 24 o 48 V. Si no conoces la categoría, verifícala antes de continuar; no copies el valor de Voc o Vmp en su lugar.</dd></div>
-<div><dt>Alimentación y recorrido del cable</dt><dd>Para la sección 4, identifica la tensión de alimentación (110, 120, 220 o 240 V), el entorno de instalación y la distancia de ida entre el tablero o inversor y el punto de carga.</dd></div>
+<div><dt>Alimentación y recorrido del cable</dt><dd>Para la sección 4, indica el entorno de instalación y la distancia de ida (la tensión se toma de la sección 3) entre el tablero o inversor y el punto de carga.</dd></div>
 </dl>
 <p class="regla-entradas"><strong>Cómo escribir los datos:</strong> ingresa solo el número, sin unidades ni separadores de miles. Para mil quinientos vatios escribe <strong>1500</strong>. Se admiten decimales en potencia, tiempo, HSP y distancia; la cantidad de vehículos debe ser un entero, como 1 o 2.</p>
 <p class="alcance-guia">Obtendrás una estimación inicial para comparar escenarios. La herramienta no incorpora todos los márgenes de batería, pérdidas ni verificaciones de compatibilidad de equipos necesarios para definir una instalación.</p>
@@ -228,7 +228,7 @@
 <div class="paso paso-cables-ac">
 <div class="info-origen-ac"><div><small>Potencia del paso 1.1</small><strong id="potencia_ac_origen">Sin registrar</strong></div><div><small>Conexión asumida</small><strong id="configuracion_ac"></strong></div></div>
 <p aria-live="polite" class="texto-ayuda-ac" id="estado-potencia-ac"></p>
-<label for="tension_ac">Tensión de alimentación (V)</label><p class="ayuda-campo" id="ayuda-tension_ac">Selecciona la tensión real de alimentación del punto de carga. Puedes elegir 110, 120, 220 o 240 V. Si no la conoces, consúltala antes de continuar.</p>
+<label for="tension_ac">Tensión de alimentación (V)</label><p class="ayuda-campo" id="ayuda-tension_ac">La tensión se toma automáticamente de la tensión de salida elegida en la sección 3.</p>
 <select aria-describedby="ayuda-tension_ac" id="tension_ac"><option value="">-- Selecciona la tensión --</option><option value="110">110 V</option><option value="120">120 V</option><option value="220">220 V</option><option value="240">240 V</option></select>
 <label for="distancia_ac">Distancia de ida hasta el cargador (m)</label><p class="ayuda-campo" id="ayuda-distancia_ac">Distancia de ida mayor que 0 y hasta 10000 m; admite decimales. Ejemplo: para 12 metros y medio, escribe 12.5. No dupliques la distancia: la herramienta incluye el retorno.</p>
 <input aria-describedby="ayuda-distancia_ac error-distancia_ac" id="distancia_ac" max="10000" min="0" placeholder="Ej: 20" required="" step="any" type="number"/>
@@ -260,6 +260,6 @@
 <script src="cables-ac-simple.js?v=20261119-costos"></script>
 <script src="ayuda-simple.js?v=20261119-costos"></script>
 <script src="app.js"></script>
-<script src="plantillas-simple.js?v=20261119-costos"></script>
+<script src="plantillas-simple.js?v=20261119-costos"></script><script>(function(){var s=document.getElementById('tension_salida'),d=document.getElementById('tension_ac'),t=document.getElementById('tension_ac_valor');if(!s||!d||!t)return;function sync(){var v=s.value;var nv=v==='110'||v==='220'?v:'';var old=d.value;d.value=nv;t.textContent=v==='110'?'110 V (salida 110/120 V del inversor)':v==='220'?'220 V (salida 220/240 V del inversor)':'Selecciona primero la tensión de salida en la sección 3';if(old!==nv)d.dispatchEvent(new Event('change',{bubbles:true}));}s.addEventListener('change',sync);var b=document.getElementById('selector-diseno');if(b)b.addEventListener('change',sync);['borrar-todo-superior','borrar-todo-inferior'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('click',sync);});var r=document.querySelector('.btn-reiniciar');if(r)r.addEventListener('click',sync);sync();})();</script>
 </body>
 </html>
