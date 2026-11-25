@@ -155,7 +155,7 @@
       <p>DoD de ${CONFIG.nombreTipo[tipo]} (${dod}): energía útil por batería (EutilBAT): <strong>${fmt(Eutil, 0)} Wh</strong></p>
       <p>Número de baterías: <strong>${n}</strong></p>
       <p>Energía del banco: <strong>E_banco = ${n} × ${fmt(Eutil, 0)} = ${fmt(Ebanco, 0)} Wh</strong>, mayor que la energía requerida de ${fmt(estado.E_aut, 0)} Wh.</p>
-      <p><strong>Recomendación:</strong> conecta las ${n} baterías en paralelo para aumentar la capacidad del banco y alcanzar la energía requerida. El voltaje del banco se mantiene igual al de una batería.</p>
+      <p><strong>Recomendación:</strong> conecta el banco de ${n} baterías según el voltaje DC que requiera el inversor y lo que indique el fabricante. La energía útil del banco es de ${fmt(Ebanco, 0)} Wh.</p>
       ${lineaPlomo}
       <p class="nota">Usa la misma referencia de batería en todo el banco. Conecta las baterías con el mismo estado de carga, usa cables de igual longitud y calibre, y respeta el máximo de baterías en paralelo que indique el fabricante.</p>`, 'ok');
   }
@@ -308,7 +308,7 @@
     mostrar(out, `
       <p><strong>Entrada (arreglo solar, Opción ${op.letra}):</strong> ${fmt(op.P_final, 0)} W</p>
       <p><strong>Salida (consumo, Paso 1.1):</strong> ${fmt(estado.P, 0)} W</p>
-      <p><strong>Recomendación:</strong> busca un inversor con potencia de entrada FV de al menos ${fmt(op.P_final, 0)} W y potencia de salida de al menos ${fmt(estado.P, 0)} W, con salida en ${salida}.</p>
+      <p><strong>Recomendación:</strong> busca un inversor con potencia de entrada FV de al menos ${fmt(op.P_final, 0)} W y potencia de salida de al menos ${fmt(estado.P, 0)} W, con salida en ${salida}. Verifica en las especificaciones del inversor que la corriente de descarga de las baterías sea menor que la corriente de entrada del inversor.</p>
       <p class="advertencia">${lineaVoltaje}</p>`, 'ok');
   }
 
