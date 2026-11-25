@@ -1,8 +1,12 @@
 /*
- * Dimensionamiento preliminar de conductores AC para estaciones de carga a 110, 120, 220 o 240 V.
- * V1.0 - Uso académico. No sustituye el diseño de instalación por personal competente.
- * Entradas: potencia del paso 1.1 (P_dispositivo), tensión (tension_ac) y distancia de ida (distancia_ac).
- * Configuración: cobre, circuito AC monofásico de 2 conductores activos: L-N (110/120 V) o L1-L2 (220/240 V), FP=1.
+ * Dimensionamiento preliminar de conductores AC para estaciones de carga a 110, 120, 220 o 240 V monofásicos
+ * y 220 V trifásicos (línea a línea).
+ * V1.1 - Uso académico. No sustituye el diseño de instalación por personal competente.
+ * Entradas: potencia del paso 1.1 (P_dispositivo), tensión y servicio heredados de la salida del inversor
+ * (tension_ac: "110", "220" o "220T") y distancia de ida (distancia_ac).
+ * Configuración: cobre, FP=1.
+ *   - Monofásico / bifásico (2 conductores activos): caída con factor de lazo 2 (ida y retorno).
+ *   - Trifásico equilibrado (L1-L2-L3, sin neutro): I = P / (√3·V·FP) y caída con factor √3.
  * Criterio de caída de tensión: 3% en el circuito analizado.
  * Resistencia aproximada: rho = 0.021 ohm*mm2/m (cobre a ~75 °C), conservadora.
  * Ampacidades de referencia: columna 60 °C, Cu, tres conductores portadores o menos.
@@ -15,12 +19,12 @@
   const CONFIG = Object.freeze({
     defaultVoltage: 110,
     supportedVoltages: Object.freeze([110, 120, 220, 240]),
+    threePhaseVoltage: 220,
     maxDropPercent: 3,
     copperResistivityOhmMm2PerM: 0.021,
     powerFactor: 1,
     minCircuitAmps: 20,
     continuousLoadFactor: 1.25,
-    prototypeCurrentLimit: 10,
     // Calibres AWG 60 °C Cu: valores nominales empleados como referencia.
     sizes: Object.freeze([
       { awg: '14', sectionMm2: 2.08, ampacityA: 15 },
@@ -39,11 +43,22 @@
     ])
   });
 
-  function calculateAcCable(distanceM, powerW, voltageV = CONFIG.defaultVoltage, residential = true) {
+  // Convierte el valor del campo tension_ac ("110", "220", "220T") en tensión y número de fases.
+  function parseVoltageValue(raw) {
+    const text = String(raw == null ? '' : raw).trim();
+    return { voltage: Number(text.replace('T', '')), phases: text.endsWith('T') ? 3 : 1 };
+  }
+
+  function calculateAcCable(distanceM, powerW, voltageV = CONFIG.defaultVoltage, residential = true, phases = 1) {
     const distance = Number(distanceM);
     const power = Number(powerW);
     const voltage = Number(voltageV);
-    if (!CONFIG.supportedVoltages.includes(voltage)) {
+    const threePhase = phases === 3;
+    if (threePhase) {
+      if (voltage !== CONFIG.threePhaseVoltage) {
+        return { ok: false, error: 'El servicio trifásico admitido es de 220 V entre líneas.' };
+      }
+    } else if (!CONFIG.supportedVoltages.includes(voltage)) {
       return { ok: false, error: 'Selecciona una tensión admitida: 110, 120, 220 o 240 V.' };
     }
     if (!Number.isFinite(distance) || distance <= 0) {
@@ -56,12 +71,18 @@
       return { ok: false, error: 'Los valores exceden el alcance de esta herramienta de dimensionamiento preliminar.' };
     }
 
-    const currentA = power / (voltage * CONFIG.powerFactor);
+    const sqrt3 = Math.sqrt(3);
+    // Trifásico: I = P / (√3·V·FP), con V línea a línea. Monofásico/bifásico: I = P / (V·FP).
+    const currentA = threePhase
+      ? power / (sqrt3 * voltage * CONFIG.powerFactor)
+      : power / (voltage * CONFIG.powerFactor);
+    // Factor de lazo: 2 en monofásico/bifásico (ida y retorno); √3 en trifásico equilibrado.
+    const loopFactor = threePhase ? sqrt3 : 2;
     const designCurrentA = currentA * CONFIG.continuousLoadFactor;
     const nominalCircuitA = Math.max(designCurrentA, residential ? CONFIG.minCircuitAmps : 0);
     const maxDropV = voltage * CONFIG.maxDropPercent / 100;
     const minimumSectionDropMm2 =
-      2 * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / maxDropV;
+      loopFactor * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / maxDropV;
 
     const byAmpacity = CONFIG.sizes.find(c => c.ampacityA >= nominalCircuitA);
     const byDrop = CONFIG.sizes.find(c => c.sectionMm2 >= minimumSectionDropMm2);
@@ -76,19 +97,31 @@
       };
     }
 
-    const dropV = 2 * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / cable.sectionMm2;
+    const dropV = loopFactor * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / cable.sectionMm2;
     const dropPercent = 100 * dropV / voltage;
     const mechanism = cable.awg === byAmpacity.awg && cable.awg === byDrop.awg
       ? 'Ampacidad y caída de tensión'
       : cable.awg === byAmpacity.awg ? 'Ampacidad' : 'Caída de tensión';
+
+    const connection = threePhase
+      ? 'L1-L2-L3 (tres fases)'
+      : voltage <= 120 ? 'L-N (fase y neutro)' : 'L1-L2 (dos líneas)';
+    const wireNames = threePhase
+      ? 'tres fases (L1, L2 y L3)'
+      : voltage <= 120 ? 'fase y neutro' : 'L1 y L2';
+    const lineNote = threePhase
+      ? 'trifásico equilibrado L1-L2-L3 sin neutro; caída con factor √3 (sin conductor de retorno)'
+      : `monofásico ${voltage <= 120 ? 'L-N' : 'L1-L2'} con ida y retorno (factor 2)`;
 
     return {
       ok: true,
       distanceM: distance,
       powerW: power,
       voltageV: voltage,
-      connection: voltage <= 120 ? 'L-N (fase y neutro)' : 'L1-L2 (dos líneas)',
-      wireNames: voltage <= 120 ? 'fase y neutro' : 'L1 y L2',
+      phases: threePhase ? 3 : 1,
+      connection,
+      wireNames,
+      loopFactor,
       currentA,
       designCurrentA,
       minimumCircuitAmpacityA: nominalCircuitA,
@@ -100,23 +133,24 @@
       voltageDropPercent: dropPercent,
       receivedVoltageV: voltage - dropV,
       controllingCriterion: mechanism,
-      overPrototypeLimit: currentA > CONFIG.prototypeCurrentLimit,
-      outsidePrototypeVoltage: voltage !== CONFIG.defaultVoltage,
-      assumptions: `Circuito AC monofásico ${voltage <= 120 ? 'L-N' : 'L1-L2'}, cobre; FP=1; ida y retorno; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}.`
+      assumptions: `Circuito AC ${lineNote}; cobre; FP=1; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}.`
     };
   }
 
   root.calcularConductorAC = calculateAcCable;
+  root.parseVoltageValue = parseVoltageValue;
   // Compatibilidad con la interfaz de 110 V anterior.
   root.calcularConductorAC110 = (distance, power) => calculateAcCable(distance, power, 110);
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { calculateAcCable, CONFIG };
+    module.exports = { calculateAcCable, parseVoltageValue, CONFIG };
   }
 
   if (typeof document === 'undefined') return;
   const powerEl = document.getElementById('P_dispositivo');
   const distanceEl = document.getElementById('distancia_ac');
   const voltageEl = document.getElementById('tension_ac');
+  const salidaEl = document.getElementById('tension_salida');
+  const voltageTextEl = document.getElementById('tension_ac_valor');
   const environmentEl = document.getElementById('entorno_ac');
   const connectionEl = document.getElementById('configuracion_ac');
   const out = document.getElementById('resultado-4');
@@ -125,13 +159,37 @@
   const status = document.getElementById('estado-potencia-ac');
   if (!powerEl || !distanceEl || !voltageEl || !out || !btn) return;
 
+  // Tensión y servicio de la sección 4 se heredan de la salida elegida en la sección 3.
+  const VOLTAGE_FROM_OUTPUT = Object.freeze({
+    '110': { value: '110', text: '110 V · fase y neutro (L-N), salida 110/120 V del inversor' },
+    '220': { value: '220', text: '220 V · dos líneas (L1-L2), salida 220/240 V del inversor' },
+    '220T': { value: '220T', text: '220 V · tres fases (L1-L2-L3), salida trifásica del inversor' }
+  });
+  function syncVoltageFromInverter() {
+    const key = salidaEl ? salidaEl.value : '';
+    const mapped = VOLTAGE_FROM_OUTPUT[key];
+    const previous = voltageEl.value;
+    voltageEl.value = mapped ? mapped.value : '';
+    if (voltageTextEl) {
+      voltageTextEl.textContent = mapped ? mapped.text : 'Selecciona primero la tensión de salida en la sección 3';
+    }
+    if (previous !== voltageEl.value) voltageEl.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  root.sincronizarTensionAC = syncVoltageFromInverter;
+  if (salidaEl) salidaEl.addEventListener('change', syncVoltageFromInverter);
+
   const fmt = (number, decimals = 2) => number.toLocaleString('es-CO', {
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals
   });
   function showPowerSource() {
-    const v = Number(voltageEl.value);
-    if (connectionEl) connectionEl.textContent = !v ? 'Tensión sin seleccionar' : v <= 120 ? `${v} V · fase y neutro (L-N)` : `${v} V · dos líneas (L1-L2)`;
+    const { voltage: v, phases } = parseVoltageValue(voltageEl.value);
+    if (connectionEl) {
+      connectionEl.textContent = !v
+        ? 'Tensión sin seleccionar'
+        : phases === 3 ? `${v} V · tres fases (L1-L2-L3)`
+        : v <= 120 ? `${v} V · fase y neutro (L-N)` : `${v} V · dos líneas (L1-L2)`;
+    }
     const power = Number(powerEl.value);
     if (powerDisplay) powerDisplay.textContent = power > 0 && Number.isFinite(power)
       ? `${fmt(power, 0)} W`
@@ -148,14 +206,15 @@
     out.appendChild(p);
   }
   function showResult(res) {
-    const warnings = [
-      res.overPrototypeLimit
-        ? `<p class="aviso-cable"><strong>Límite del prototipo:</strong> la corriente calculada (${fmt(res.currentA)} A) supera los 10 A previstos para el prototipo; no implica que sus componentes soporten esta carga.</p>`
-        : '',
-      res.outsidePrototypeVoltage
-        ? `<p class="aviso-cable"><strong>Tensión fuera del escenario original:</strong> ${res.voltageV} V es un escenario de dimensionamiento adicional. Comprueba que inversor, EVSE, vehículo, protecciones y red admitan esta tensión; no se debe conectar el prototipo de 110 V a otra tensión sin rediseño.</p>`
-        : ''
-    ].join('');
+    const formulaDrop = res.phases === 3
+      ? `S<sub>caída</sub> = √3·ρ·L·I / ${fmt(res.voltageDropLimitV)} V`
+      : `S<sub>caída</sub> = 2·ρ·L·I / ${fmt(res.voltageDropLimitV)} V`;
+    const formulaCurrent = res.phases === 3
+      ? `I = P / (√3 · ${res.voltageV} V)`
+      : `I = P / ${res.voltageV} V`;
+    const phaseNote = res.phases === 3
+      ? ' El cálculo supone carga trifásica equilibrada y no incluye neutro; si el equipo lo requiere, debe verificarse aparte.'
+      : '';
     out.className = 'resultado resultado-ac visible';
     // Solo se interpolan números de salida del cálculo y texto interno controlado por el código.
     out.innerHTML = `
@@ -177,10 +236,9 @@
         <div><small>Tensión al final (estimada)</small><strong>${fmt(res.receivedVoltageV)} V</strong></div>
         <div><small>Condición determinante</small><strong>${res.controllingCriterion}</strong></div>
       </div>
-      ${warnings}
       <p class="nota-ac"><strong>Supuestos aplicados:</strong> ${res.assumptions}</p>
-      <p class="nota-ac"><strong>Cómo se obtuvo:</strong> I = P / ${res.voltageV}; I<sub>diseño</sub> = 1,25·I; S<sub>caída</sub> = 2·ρ·L·I / ${fmt(res.voltageDropLimitV)} V, con ρ = 0,021 Ω·mm²/m. Se selecciona el primer AWG que cumpla caída ≤ 3 % y ampacidad ≥ ${fmt(res.minimumCircuitAmpacityA)} A.</p>
-      <p class="nota-ac"><strong>Verificación pendiente:</strong> el mínimo de 20 A corresponde a circuitos domiciliarios o similares para carga de VE según RETIE 2026, art. 3.17.7(b). No se incluyen correcciones de temperatura, agrupamiento, instalación o fabricante, ni dimensionamiento del conductor de protección (PE), del interruptor automático ni del diferencial. Para 220/240 V la configuración mostrada usa L1-L2, no fase-neutro; el PE sigue siendo obligatorio según corresponda. El calibre debe validarse con la NTC 2050, el RETIE aplicable, las terminales y la ficha del equipo.</p>
+      <p class="nota-ac"><strong>Cómo se obtuvo:</strong> ${formulaCurrent}; I<sub>diseño</sub> = 1,25·I; ${formulaDrop}, con ρ = 0,021 Ω·mm²/m. Se selecciona el primer AWG que cumpla caída ≤ 3 % y ampacidad ≥ ${fmt(res.minimumCircuitAmpacityA)} A.</p>
+      <p class="nota-ac"><strong>Verificación pendiente:</strong> el mínimo de 20 A corresponde a circuitos domiciliarios o similares para carga de VE según RETIE 2026, art. 3.17.7(b). No se incluyen correcciones de temperatura, agrupamiento, instalación o fabricante, ni dimensionamiento del conductor de protección (PE), del interruptor automático ni del diferencial.${phaseNote} El calibre debe validarse con la NTC 2050, el RETIE aplicable, las terminales y la ficha del equipo.</p>
       <div class="acciones-cable"><button type="button" class="btn-copiar-ac" id="copiar-ac">Copiar resultados</button><span id="mensaje-copiar-ac" aria-live="polite"></span></div>
     `;
     const copy = document.getElementById('copiar-ac');
@@ -202,8 +260,10 @@
     if (d === '') return markError('Ingresa la distancia de ida entre el tablero/inversor y el EVSE.');
     const p = powerEl.value.trim();
     if (p === '') return markError('Ingresa primero la potencia del vehículo en el Paso 1.1.');
+    if (!voltageEl.value) return markError('Elige la tensión de salida del inversor en la sección 3 para calcular los conductores.');
     if (!environmentEl.value) return markError('Selecciona el entorno de instalación antes de calcular los conductores.');
-    const res = calculateAcCable(Number(d), Number(p), Number(voltageEl.value), environmentEl.value === 'domiciliario');
+    const { voltage, phases } = parseVoltageValue(voltageEl.value);
+    const res = calculateAcCable(Number(d), Number(p), voltage, environmentEl.value === 'domiciliario', phases);
     if (!res.ok) return markError(res.error);
     showResult(res);
   }
@@ -228,11 +288,12 @@
   const resetButton = document.querySelector('.btn-reiniciar');
   if (resetButton) resetButton.addEventListener('click', () => {
     distanceEl.value = '';
-    voltageEl.value = String(CONFIG.defaultVoltage);
     environmentEl.value = 'domiciliario';
     out.className = 'resultado resultado-ac';
     out.replaceChildren();
+    syncVoltageFromInverter();
     showPowerSource();
   });
+  syncVoltageFromInverter();
   showPowerSource();
 })(typeof globalThis === 'object' ? globalThis : this);
