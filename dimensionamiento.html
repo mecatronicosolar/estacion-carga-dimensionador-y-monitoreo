@@ -32,7 +32,7 @@
 <div><dt>Tiempo y cantidad de vehículos</dt><dd>Define cuánto durará una sesión y cuántos vehículos cargarán a la vez. El cálculo supone la misma potencia y duración para todos. Por ejemplo: <strong>1 hora y 30 minutos = 1.5 h</strong>.</dd></div>
 <div><dt>Recurso solar del lugar</dt><dd>Consulta las horas solares pico (HSP) para la ubicación de la estación. En el paso 2.1 encontrarás una explicación y un enlace de consulta. Las HSP son distintas de las horas entre el amanecer y el atardecer.</dd></div>
 <div><dt>Ficha del panel solar</dt><dd>Necesitarás su potencia nominal en W y la categoría de tensión nominal que corresponda: 12, 24 o 48 V. Si no conoces la categoría, verifícala antes de continuar; no copies el valor de Voc o Vmp en su lugar.</dd></div>
-<div><dt>Alimentación y recorrido del cable</dt><dd>Para la sección 4, indica el entorno de instalación y la distancia de ida (la tensión se toma de la sección 3) entre el tablero o inversor y el punto de carga.</dd></div>
+<div><dt>Alimentación y recorrido del cable</dt><dd>Para la sección 4, indica la distancia de ida, de hasta 7,5 m (la tensión se toma de la sección 3) entre el tablero o inversor y el punto de carga.</dd></div>
 </dl>
 <p class="regla-entradas"><strong>Cómo escribir los datos:</strong> ingresa solo el número, sin unidades ni separadores de miles. Para mil quinientos vatios escribe <strong>1500</strong>. Se admiten decimales en potencia, tiempo, HSP y distancia; la cantidad de vehículos debe ser un entero, como 1 o 2.</p>
 <p class="alcance-guia">Obtendrás una estimación inicial para comparar escenarios. La herramienta no incorpora todos los márgenes de batería, pérdidas ni verificaciones de compatibilidad de equipos necesarios para definir una instalación.</p>
@@ -225,25 +225,25 @@
 </section>
 <section class="seccion" id="seccion-conductores">
 <h2>4. Dimensionamiento de conductores eléctricos AC</h2>
-<div class="descripcion-seccion"><p>Usa la potencia escrita en el paso 1.1 para estimar los conductores de un solo punto de carga. Completa la tensión, la distancia de ida y el entorno antes de calcular.</p><p>La potencia debe ser mayor que 0 y de hasta 50000 W para esta sección. Se selecciona cobre por ampacidad y caída de tensión objetivo ≤ 3 %.</p></div>
+<div class="descripcion-seccion"><p>Usa la potencia escrita en el paso 1.1 para estimar los conductores de un solo punto de carga. Completa la distancia de ida antes de calcular. La tensión se toma de la sección 3.</p><p>La potencia debe ser mayor que 0 y de hasta 50000 W para esta sección. Se selecciona cobre por ampacidad y caída de tensión objetivo ≤ 3 %.</p></div>
 <div class="paso paso-cables-ac">
 <div class="info-origen-ac"><div><small>Potencia del paso 1.1</small><strong id="potencia_ac_origen">Sin registrar</strong></div><div><small>Conexión asumida</small><strong id="configuracion_ac"></strong></div></div>
 <p aria-live="polite" class="texto-ayuda-ac" id="estado-potencia-ac"></p>
 <p class="ayuda-campo" id="ayuda-tension_ac">La tensión y el servicio se toman automáticamente de la tensión de salida elegida en la sección 3.</p>
 <input id="tension_ac" type="hidden"/>
 <p class="texto-ayuda-ac"><strong>Tensión y servicio:</strong> <span id="tension_ac_valor">Selecciona primero la tensión de salida en la sección 3</span></p>
-<label for="distancia_ac">Distancia de ida hasta el cargador (m)</label><p class="ayuda-campo" id="ayuda-distancia_ac">Distancia de ida mayor que 0 y hasta 10000 m; admite decimales. Ejemplo: para 12 metros y medio, escribe 12.5. No dupliques la distancia: la herramienta incluye el retorno.</p>
-<input aria-describedby="ayuda-distancia_ac error-distancia_ac" id="distancia_ac" max="10000" min="0" placeholder="Ej: 20" required="" step="any" type="number"/>
+<label for="distancia_ac">Distancia de ida hasta el cargador (m)</label><p class="ayuda-campo" id="ayuda-distancia_ac">Distancia de ida mayor que 0; admite decimales. Ejemplo: para 5 metros y medio, escribe 5.5. En monofásico la herramienta incluye el retorno; no dupliques la distancia.</p>
+<input aria-describedby="ayuda-distancia_ac error-distancia_ac sugerencia_distancia_ac" id="distancia_ac" min="0" placeholder="Ej: 5" required="" step="any" type="number"/>
+<p aria-live="polite" class="texto-ayuda-ac" id="sugerencia_distancia_ac"></p>
 <p aria-live="polite" class="error-campo" hidden="" id="error-distancia_ac"></p>
 <p class="texto-ayuda-ac">Recorrido de instalación fija. En monofásico el cálculo incluye ida y retorno; en trifásico, la distancia de ida se toma una sola vez. No es el cordón EVSE–vehículo.</p>
-<label for="entorno_ac">Entorno de instalación</label><p class="ayuda-campo" id="ayuda-entorno_ac">Elige «Domiciliario o similar» para una instalación residencial. Usa «Estación dedicada» cuando ese sea el caso del proyecto; esta elección cambia el criterio mínimo de ampacidad.</p>
-<select aria-describedby="ayuda-entorno_ac" id="entorno_ac"><option value="">-- Selecciona el entorno --</option><option value="domiciliario">Domiciliario o similar: circuito exclusivo mínimo 20 A</option><option value="estacion">Estación dedicada: sin mínimo domiciliario automático</option></select>
 <p class="texto-ayuda-ac">FP = 1; carga continua × 1,25; cobre a 60 °C, ambiente 30 °C, hasta tres conductores portadores en canalización/cable o enterrados. ρ = 0,021 Ω·mm²/m para caída, aproximación conservadora a unos 75 °C; no autoriza operar a esa temperatura.</p>
 <button class="btn-calcular" id="btn-calcular-ac" type="button">Calcular conductores AC</button><div aria-live="polite" class="resultado resultado-ac" id="resultado-4"></div>
 </div>
 <details class="referencia-ac"><summary>Referencias y verificaciones pendientes</summary>
 <p><a href="https://www.minenergia.gov.co/documents/15921/Libro-3-Resolucion-40284-23-06-2026.pdf" rel="noopener" target="_blank">RETIE, Resolución 40284 de 2026, Libro 3, art. 3.17.7</a>: alimentación sin superar 60 °C, circuito domiciliario exclusivo mínimo 20 A y protecciones.</p>
 <p>NTC 2050 segunda actualización: tabla 310.15(B)(16), cobre 60 °C; carga continua de VE (625.42), conductores (210.19(A)(1)) y protección (625.41). <a href="https://docs.upme.gov.co/DemandayEficiencia/Doc_Hemeroteca/Insumos_NTC_2050_Codigo_electrico_colombiano_V0_04212018.pdf" rel="noopener" target="_blank">Consulta UPME</a> (borrador; cotejar edición oficial ICONTEC). 3 % es objetivo de diseño, no certificación.</p>
+<p>Distancia de ida limitada a 7,5 m como recomendación de la NTC 2050, art. 625.17; verificar el texto de la edición vigente. El circuito se calcula con un mínimo de 20 A, independiente y exclusivo.</p>
 <p>Validar temperatura, agrupamiento, aislamiento, canalización, terminales, corriente de placa, protección y diferencial. El PE se dimensiona según protección y criterio normativo aplicable, no copiando fase. No se calcula PE ni interruptor.</p></details>
 </section>
 <section aria-labelledby="titulo-dudas" class="seccion dudas-uso">
