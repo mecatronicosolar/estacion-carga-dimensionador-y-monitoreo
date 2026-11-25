@@ -18,7 +18,6 @@
     "energiaBateria": 2560,
     "potenciaPanel": 550,
     "voltajeSalida": "110",
-    "tensionAC": "110",
     "componentes": [
       "1 × Suntech de 550 Wp",
       "Felicity FLA24100 · 24 V / 100 Ah · 2,56 kWh",
@@ -40,7 +39,6 @@
     "energiaBateria": 8750,
     "potenciaPanel": 620,
     "voltajeSalida": "",
-    "tensionAC": "",
     "componentes": [
       "6 × JA Solar de 620 Wp",
       "Felicity FLA48171-EU · 48 V nominales · 8,75 kWh",
@@ -62,7 +60,6 @@
     "energiaBateria": 8750,
     "potenciaPanel": 710,
     "voltajeSalida": "220",
-    "tensionAC": "220",
     "componentes": [
       "4 × Tensite de 710 Wp",
       "2 × Felicity FLA48171-EU · 8,75 kWh por módulo",
@@ -83,8 +80,7 @@
     "modoBateria": "energia",
     "energiaBateria": 11800,
     "potenciaPanel": 710,
-    "voltajeSalida": "",
-    "tensionAC": "",
+    "voltajeSalida": "220T",
     "componentes": [
       "6 × Tensite de 710 Wp",
       "2 × Felicity FLA48230-EU · 11,8 kWh por módulo",
@@ -103,17 +99,10 @@
     'V_bat','C_ah','Ebat_wh','HSP','P_panel','V_nominal',
     'tension_salida','tension_ac','distancia_ac','entorno_ac'];
 
+  // El inversor trifásico de 380 V del diseño de 11 kW no se verifica en la sección 3.
+  // Los conductores AC sí se calculan para 220 V trifásico.
   function ajustarTrifasica(activa) {
-    $('aviso-trifasico').hidden = !activa;
     $('aviso-inversor-trifasico').hidden = !activa;
-    $('tension_ac').disabled = activa;
-    $('tension_salida').disabled = activa;
-    $('btn-calcular-ac').disabled = activa;
-    if (activa) {
-      const out4=$('resultado-4');
-      out4.className='resultado resultado-ac'; out4.replaceChildren();
-      $('resultado-3').className='resultado'; $('resultado-3').replaceChildren();
-    }
   }
 
   function limpiarFormulario() {
@@ -129,7 +118,7 @@
     const general=$('error-dimensionador'); general.hidden=true; general.textContent='';
     ajustarTrifasica(false);
     // Actualiza la vista AC para no mostrar valores del diseño anterior.
-    $('tension_ac').dispatchEvent(new Event('change', {bubbles:true}));
+    if (window.sincronizarTensionAC) window.sincronizarTensionAC();
   }
 
   function actualizarURL(id) {
@@ -148,7 +137,7 @@
     for (const [k,v] of datos) {const dt=document.createElement('dt');dt.textContent=k; const dd=document.createElement('dd');dd.textContent=v;tabla.append(dt,dd);}
     const nota=document.createElement('p');nota.className='nota-plantilla';
     nota.textContent=t.nota + ' ' + (t.trifasico
-      ? 'El diseño es trifásico (220 V, según Costos). El dimensionamiento de cables AC e inversor trifásico queda fuera del alcance de la calculadora sencilla del ZIP. El número calculado de baterías puede diferir del presupuesto del proyecto.'
+      ? 'El diseño es trifásico (220 V, según Costos). Los conductores AC se calculan para 220 V trifásico; el inversor trifásico no se verifica en esta calculadora. El número calculado de baterías puede diferir del presupuesto del proyecto.'
       : 'El número de paneles y baterías calculado puede diferir del diseño de referencia según las HSP, la duración de carga y los supuestos del dimensionador.');
     el.append(titulo,intro,tabla,nota); el.hidden=false;
   }
@@ -166,7 +155,7 @@
     else { $('V_bat').value=String(t.voltajeBateria); $('C_ah').value=String(t.capacidadBateria); }
     $('P_panel').value=String(t.potenciaPanel);
     $('tension_salida').value=t.voltajeSalida;
-    $('tension_ac').value=t.tensionAC;
+    if (window.sincronizarTensionAC) window.sincronizarTensionAC();
     ajustarTrifasica(Boolean(t.trifasico));
     selector.value=id;
     actualizarURL(id);
@@ -174,7 +163,6 @@
     // Registrar la energía básica con el mismo motor del ZIP; no calcular FV
     // si no se dispone de HSP o de la tensión nominal del panel.
     calcularPaso1_1(); calcularPaso1_2(); calcularPaso1_3(); calcularPaso1_4();
-    $('tension_ac').dispatchEvent(new Event('change', {bubbles:true}));
   }
 
   function borrarTodo() {
