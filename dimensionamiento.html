@@ -195,7 +195,7 @@
 </section>
 <!-- SECCIÓN 3: DIMENSIONAMIENTO DEL INVERSOR -->
 <section class="seccion" id="seccion-inversor">
-<h2>3. Dimensionamiento del inversor</h2><p class="aviso-trifasico" hidden="" id="aviso-inversor-trifasico" role="status">El inversor del diseño de 11 kW es trifásico. Esta calculadora sencilla solo ofrece salida de 110/120 V o 220/240 V: no verifica ese equipo trifásico de 220 V.</p>
+<h2>3. Dimensionamiento del inversor</h2><p class="aviso-trifasico" hidden="" id="aviso-inversor-trifasico" role="status">El inversor del diseño de 11 kW es trifásico. Esta calculadora no verifica ese equipo: solo ofrece salida de 110/120 V, 220/240 V o 220 V trifásico para calcular los conductores.</p>
 <div class="descripcion-seccion">
 <p>
 <strong>¿Por qué esta sección?</strong> El inversor convierte la energía DC de los paneles
@@ -210,11 +210,12 @@
 <p class="ayuda-seccion">Solo debes elegir la tensión de salida. La entrada del inversor se toma de la configuración que selecciones en la sección 2, y la salida, de la potencia del paso 1.1.</p>
 <div class="paso">
 <label for="tension_salida">Tensión de salida del inversor</label>
-<p class="ayuda-campo" id="ayuda-tension_salida">Elige 110/120 V para una salida monofásica, o 220/240 V si la carga requiere dos líneas. Esta elección se usa para buscar el inversor.</p>
+<p class="ayuda-campo" id="ayuda-tension_salida">Elige 110/120 V para una salida monofásica, 220/240 V si la carga requiere dos líneas, o 220 V trifásico si el punto tiene tres fases. Esta elección se usa para buscar el inversor y para calcular los conductores de la sección 4.</p>
 <select aria-describedby="ayuda-tension_salida" id="tension_salida">
 <option value="">-- Selecciona la salida --</option>
 <option value="110">110/120 V</option>
 <option value="220">220/240 V</option>
+<option value="220T">220 V trifásico (3 fases)</option>
 </select>
 </div>
 <div class="paso">
@@ -223,17 +224,18 @@
 </div>
 </section>
 <section class="seccion" id="seccion-conductores">
-<h2>4. Dimensionamiento de conductores eléctricos AC</h2><p class="aviso-trifasico" hidden="" id="aviso-trifasico" role="status">El diseño de 11 kW es trifásico (220 V, según la hoja Costos). Este módulo del ZIP solo calcula conductores monofásicos de 110–240 V, por lo que no dimensiona los conductores de esa estación. Se necesita un cálculo trifásico específico.</p>
+<h2>4. Dimensionamiento de conductores eléctricos AC</h2>
 <div class="descripcion-seccion"><p>Usa la potencia escrita en el paso 1.1 para estimar los conductores de un solo punto de carga. Completa la tensión, la distancia de ida y el entorno antes de calcular.</p><p>La potencia debe ser mayor que 0 y de hasta 50000 W para esta sección. Se selecciona cobre por ampacidad y caída de tensión objetivo ≤ 3 %.</p></div>
 <div class="paso paso-cables-ac">
 <div class="info-origen-ac"><div><small>Potencia del paso 1.1</small><strong id="potencia_ac_origen">Sin registrar</strong></div><div><small>Conexión asumida</small><strong id="configuracion_ac"></strong></div></div>
 <p aria-live="polite" class="texto-ayuda-ac" id="estado-potencia-ac"></p>
-<label for="tension_ac">Tensión de alimentación (V)</label><p class="ayuda-campo" id="ayuda-tension_ac">La tensión se toma automáticamente de la tensión de salida elegida en la sección 3.</p>
-<select aria-describedby="ayuda-tension_ac" id="tension_ac"><option value="">-- Selecciona la tensión --</option><option value="110">110 V</option><option value="120">120 V</option><option value="220">220 V</option><option value="240">240 V</option></select>
+<p class="ayuda-campo" id="ayuda-tension_ac">La tensión y el servicio se toman automáticamente de la tensión de salida elegida en la sección 3.</p>
+<input id="tension_ac" type="hidden"/>
+<p class="texto-ayuda-ac"><strong>Tensión y servicio:</strong> <span id="tension_ac_valor">Selecciona primero la tensión de salida en la sección 3</span></p>
 <label for="distancia_ac">Distancia de ida hasta el cargador (m)</label><p class="ayuda-campo" id="ayuda-distancia_ac">Distancia de ida mayor que 0 y hasta 10000 m; admite decimales. Ejemplo: para 12 metros y medio, escribe 12.5. No dupliques la distancia: la herramienta incluye el retorno.</p>
 <input aria-describedby="ayuda-distancia_ac error-distancia_ac" id="distancia_ac" max="10000" min="0" placeholder="Ej: 20" required="" step="any" type="number"/>
 <p aria-live="polite" class="error-campo" hidden="" id="error-distancia_ac"></p>
-<p class="texto-ayuda-ac">Recorrido de instalación fija. Incluye ida y retorno en el cálculo; no es el cordón EVSE–vehículo.</p>
+<p class="texto-ayuda-ac">Recorrido de instalación fija. En monofásico el cálculo incluye ida y retorno; en trifásico, la distancia de ida se toma una sola vez. No es el cordón EVSE–vehículo.</p>
 <label for="entorno_ac">Entorno de instalación</label><p class="ayuda-campo" id="ayuda-entorno_ac">Elige «Domiciliario o similar» para una instalación residencial. Usa «Estación dedicada» cuando ese sea el caso del proyecto; esta elección cambia el criterio mínimo de ampacidad.</p>
 <select aria-describedby="ayuda-entorno_ac" id="entorno_ac"><option value="">-- Selecciona el entorno --</option><option value="domiciliario">Domiciliario o similar: circuito exclusivo mínimo 20 A</option><option value="estacion">Estación dedicada: sin mínimo domiciliario automático</option></select>
 <p class="texto-ayuda-ac">FP = 1; carga continua × 1,25; cobre a 60 °C, ambiente 30 °C, hasta tres conductores portadores en canalización/cable o enterrados. ρ = 0,021 Ω·mm²/m para caída, aproximación conservadora a unos 75 °C; no autoriza operar a esa temperatura.</p>
@@ -260,6 +262,6 @@
 <script src="cables-ac-simple.js?v=20261119-costos"></script>
 <script src="ayuda-simple.js?v=20261119-costos"></script>
 <script src="app.js"></script>
-<script src="plantillas-simple.js?v=20261119-costos"></script><script>(function(){var s=document.getElementById('tension_salida'),d=document.getElementById('tension_ac'),t=document.getElementById('tension_ac_valor');if(!s||!d||!t)return;function sync(){var v=s.value;var nv=v==='110'||v==='220'?v:'';var old=d.value;d.value=nv;t.textContent=v==='110'?'110 V (salida 110/120 V del inversor)':v==='220'?'220 V (salida 220/240 V del inversor)':'Selecciona primero la tensión de salida en la sección 3';if(old!==nv)d.dispatchEvent(new Event('change',{bubbles:true}));}s.addEventListener('change',sync);var b=document.getElementById('selector-diseno');if(b)b.addEventListener('change',sync);['borrar-todo-superior','borrar-todo-inferior'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('click',sync);});var r=document.querySelector('.btn-reiniciar');if(r)r.addEventListener('click',sync);sync();})();</script>
+<script src="plantillas-simple.js?v=20261119-costos"></script>
 </body>
 </html>
