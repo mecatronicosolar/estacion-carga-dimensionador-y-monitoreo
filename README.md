@@ -56,7 +56,7 @@ Esta es la energía de consumo del escenario; la selección de equipos debe cons
 
 La herramienta sirve para **dimensionamiento preliminar y comparación de escenarios**. La versión guiada usa supuestos simplificados: profundidad de descarga de 0,5 para plomo y 0,8 para litio, y factor 1,25 para la estimación de generación fotovoltaica. No contempla de forma completa eficiencias, envejecimiento, reservas ni todas las restricciones de los equipos.
 
-El módulo AC admite **110, 120, 220 y 240 V monofásicos**. No dimensiona el circuito **trifásico de 220 V de la estación de 11 kW**. Tampoco calcula el conductor de protección ni selecciona el interruptor o diferencial.
+El módulo AC admite **110, 120, 220 y 240 V monofásicos** y **220 V trifásico** (tres fases, sin neutro). Para el trifásico usa la caída con factor √3 y no verifica el inversor de 11 kW. Tampoco calcula el conductor de protección ni selecciona el interruptor o diferencial.
 
 Antes de definir una instalación deben verificarse las fichas de los equipos, las condiciones reales del sitio, las protecciones y el diseño eléctrico completo. Los presupuestos mostrados son referencias del proyecto, no cotizaciones actualizadas.
 
