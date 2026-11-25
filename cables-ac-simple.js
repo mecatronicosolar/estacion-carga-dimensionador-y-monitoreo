@@ -11,8 +11,9 @@
  * Resistencia aproximada: rho = 0.021 ohm*mm2/m (cobre a ~75 °C), conservadora.
  * Ampacidades de referencia: columna 60 °C, Cu, tres conductores portadores o menos.
  * Sin factores de corrección por temperatura, agrupamiento o métodos de instalación.
- * Nota: se adopta circuito independiente de al menos 20 A para entornos domiciliarios
- * o similares según RETIE 2026, Art. 3.17.7, literal b. No aplica indiscriminadamente.
+ * Nota: el circuito se calcula con un mínimo de 20 A (circuito independiente y exclusivo,
+ * RETIE 2026, Art. 3.17.7, literal b). Si la corriente de diseño supera 20 A, se usa esa corriente.
+ * Distancia de ida limitada a 7,5 m como recomendación de la NTC 2050, art. 625.17.
  */
 (function (root) {
   'use strict';
@@ -25,6 +26,7 @@
     powerFactor: 1,
     minCircuitAmps: 20,
     continuousLoadFactor: 1.25,
+    maxDistanceM: 7.5,
     // Calibres AWG 60 °C Cu: valores nominales empleados como referencia.
     sizes: Object.freeze([
       { awg: '14', sectionMm2: 2.08, ampacityA: 15 },
@@ -49,7 +51,7 @@
     return { voltage: Number(text.replace('T', '')), phases: text.endsWith('T') ? 3 : 1 };
   }
 
-  function calculateAcCable(distanceM, powerW, voltageV = CONFIG.defaultVoltage, residential = true, phases = 1) {
+  function calculateAcCable(distanceM, powerW, voltageV = CONFIG.defaultVoltage, phases = 1) {
     const distance = Number(distanceM);
     const power = Number(powerW);
     const voltage = Number(voltageV);
@@ -67,8 +69,8 @@
     if (!Number.isFinite(power) || power <= 0) {
       return { ok: false, error: 'Primero registra una potencia de carga mayor que 0 W en la Sección 1.' };
     }
-    if (distance > 10000 || power > 50000) {
-      return { ok: false, error: 'Los valores exceden el alcance de esta herramienta de dimensionamiento preliminar.' };
+    if (power > 50000) {
+      return { ok: false, error: 'La potencia excede el alcance de esta herramienta de dimensionamiento preliminar.' };
     }
 
     const sqrt3 = Math.sqrt(3);
@@ -79,7 +81,8 @@
     // Factor de lazo: 2 en monofásico/bifásico (ida y retorno); √3 en trifásico equilibrado.
     const loopFactor = threePhase ? sqrt3 : 2;
     const designCurrentA = currentA * CONFIG.continuousLoadFactor;
-    const nominalCircuitA = Math.max(designCurrentA, residential ? CONFIG.minCircuitAmps : 0);
+    // Piso de 20 A para circuito domiciliario independiente; si la corriente de diseño es mayor, se usa esa.
+    const nominalCircuitA = Math.max(designCurrentA, CONFIG.minCircuitAmps);
     const maxDropV = voltage * CONFIG.maxDropPercent / 100;
     const minimumSectionDropMm2 =
       loopFactor * CONFIG.copperResistivityOhmMm2PerM * distance * currentA / maxDropV;
@@ -133,7 +136,7 @@
       voltageDropPercent: dropPercent,
       receivedVoltageV: voltage - dropV,
       controllingCriterion: mechanism,
-      assumptions: `Circuito AC ${lineNote}; cobre; FP=1; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; ${residential ? 'mínimo 20 A domiciliario/similar' : 'estación dedicada sin mínimo domiciliario'}.`
+      assumptions: `Circuito AC ${lineNote}; cobre; FP=1; ampacidad Cu a 60 °C, ambiente 30 °C, hasta tres portadores sin ajustes; carga continua ×1,25; circuito independiente y exclusivo con mínimo 20 A; distancia de ida ≤ ${CONFIG.maxDistanceM} m.`
     };
   }
 
@@ -151,12 +154,12 @@
   const voltageEl = document.getElementById('tension_ac');
   const salidaEl = document.getElementById('tension_salida');
   const voltageTextEl = document.getElementById('tension_ac_valor');
-  const environmentEl = document.getElementById('entorno_ac');
   const connectionEl = document.getElementById('configuracion_ac');
   const out = document.getElementById('resultado-4');
   const btn = document.getElementById('btn-calcular-ac');
   const powerDisplay = document.getElementById('potencia_ac_origen');
   const status = document.getElementById('estado-potencia-ac');
+  const suggestionEl = document.getElementById('sugerencia_distancia_ac');
   if (!powerEl || !distanceEl || !voltageEl || !out || !btn) return;
 
   // Tensión y servicio de la sección 4 se heredan de la salida elegida en la sección 3.
@@ -229,6 +232,7 @@
         <div><small>Tensión y conexión</small><strong>${res.voltageV} V · ${res.connection}</strong></div>
         <div><small>Corriente de carga</small><strong>${fmt(res.currentA)} A</strong></div>
         <div><small>Corriente de diseño (×1,25)</small><strong>${fmt(res.designCurrentA)} A</strong></div>
+        <div><small>Corriente mínima del circuito</small><strong>${fmt(res.minimumCircuitAmpacityA)} A</strong></div>
         <div><small>Ampacidad de referencia</small><strong>${fmt(res.wire.ampacityA, 0)} A</strong></div>
         <div><small>Caída de tensión calculada</small><strong>${fmt(res.voltageDropV)} V (${fmt(res.voltageDropPercent)} %)</strong></div>
         <div><small>Caída máxima objetivo</small><strong>${fmt(res.voltageDropLimitV)} V (3,00 %)</strong></div>
@@ -254,6 +258,17 @@
         .catch(() => { msg.textContent = 'No se pudo copiar. Verifica los permisos del navegador.'; });
     });
   }
+  // Sugerencia de distancia (NTC 2050, art. 625.17). Es una recomendación: no bloquea el cálculo.
+  function updateSuggestion() {
+    if (!suggestionEl) return;
+    const base = `Recomendación NTC 2050, art. 625.17: distancia de ida de hasta ${fmt(CONFIG.maxDistanceM, 1)} m.`;
+    const d = Number(distanceEl.value);
+    if (distanceEl.value.trim() !== '' && d > CONFIG.maxDistanceM) {
+      suggestionEl.textContent = `${base} Su distancia (${fmt(d)} m) la supera; el cálculo sigue disponible, pero revisa el recorrido.`;
+    } else {
+      suggestionEl.textContent = base;
+    }
+  }
   function run() {
     showPowerSource();
     const d = distanceEl.value.trim();
@@ -261,14 +276,12 @@
     const p = powerEl.value.trim();
     if (p === '') return markError('Ingresa primero la potencia del vehículo en el Paso 1.1.');
     if (!voltageEl.value) return markError('Elige la tensión de salida del inversor en la sección 3 para calcular los conductores.');
-    if (!environmentEl.value) return markError('Selecciona el entorno de instalación antes de calcular los conductores.');
     const { voltage, phases } = parseVoltageValue(voltageEl.value);
-    const res = calculateAcCable(Number(d), Number(p), voltage, environmentEl.value === 'domiciliario', phases);
+    const res = calculateAcCable(Number(d), Number(p), voltage, phases);
     if (!res.ok) return markError(res.error);
     showResult(res);
   }
   btn.addEventListener('click', run);
-  environmentEl.addEventListener('change', () => { if (out.classList.contains('visible')) run(); });
   powerEl.addEventListener('input', () => {
     showPowerSource();
     if (out.classList.contains('visible')) run();
@@ -278,6 +291,7 @@
     if (out.classList.contains('visible')) run();
   });
   distanceEl.addEventListener('input', () => {
+    updateSuggestion();
     if (out.classList.contains('visible')) {
       if (distanceEl.value === '') {
         out.className = 'resultado resultado-ac';
@@ -288,12 +302,13 @@
   const resetButton = document.querySelector('.btn-reiniciar');
   if (resetButton) resetButton.addEventListener('click', () => {
     distanceEl.value = '';
-    environmentEl.value = 'domiciliario';
     out.className = 'resultado resultado-ac';
     out.replaceChildren();
     syncVoltageFromInverter();
+    updateSuggestion();
     showPowerSource();
   });
   syncVoltageFromInverter();
+  updateSuggestion();
   showPowerSource();
 })(typeof globalThis === 'object' ? globalThis : this);
