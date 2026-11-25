@@ -299,7 +299,7 @@
 
     const tension = $('tension_salida')?.value;
     if (!tension) return mostrar(out, 'Selecciona si la salida será 110/120 V o 220/240 V.', 'pendiente');
-    const salida = tension === '220' ? '220/240 V' : '110/120 V';
+    const salida = tension === '220T' ? '220 V trifásico (3 fases)' : tension === '220' ? '220/240 V' : '110/120 V';
 
     const lineaVoltaje = estado.Vbat
       ? `El voltaje de entrada DC del inversor debe ser igual al del banco: <strong>${fmt(estado.Vbat, 0)} V</strong>.`
